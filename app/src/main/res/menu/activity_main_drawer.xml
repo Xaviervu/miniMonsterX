@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_device"
+            android:icon="@drawable/ic_widgets_black_24dp"
+            android:title="@string/device" />
+        <item
+            android:id="@+id/nav_addDevice"
+            android:icon="@drawable/ic_add_circle_outline_black_24dp"
+            android:title="@string/add_device" />
+
+    </group>
+
+
+</menu>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+
+    <ImageView
+        android:id="@+id/imgVDevice"
+        android:layout_width="@dimen/icon_width"
+        android:layout_height="@dimen/icon_width"
+        android:contentDescription="@string/input_icon"
+        app:srcCompat="@drawable/device" />
+
+    <TextView
+        android:id="@+id/txtVDevices"
+        android:layout_width="@dimen/device_name_width"
+        android:layout_height="wrap_content"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+        android:checked="true"
+        android:contextClickable="true"
+        android:fontFamily="sans-serif-thin"
+        android:text="@string/current_device"
+        android:textSize="22sp" />
+
+    <Button
+        android:id="@+id/btnDelete"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:background="@drawable/cancel" />
+
+
+</LinearLayout>
