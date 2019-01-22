@@ -104,7 +104,6 @@ public class DeviceSelectFragment extends AppCompatDialogFragment {
             _listener.onDeleteItem(deviceName);
         }
     }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
