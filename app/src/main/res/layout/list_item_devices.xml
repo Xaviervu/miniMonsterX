@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -21,10 +22,12 @@
         android:layout_height="wrap_content"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
         android:checked="true"
-        android:contextClickable="true"
         android:fontFamily="sans-serif-thin"
+        android:paddingLeft="@dimen/text_padding_select_dev"
         android:text="@string/current_device"
-        android:textSize="22sp" />
+        android:textSize="22sp"
+        android:paddingStart="@dimen/text_padding_select_dev"
+        tools:ignore="RtlSymmetry" />
 
     <Button
         android:id="@+id/btnDelete"

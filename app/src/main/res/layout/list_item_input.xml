@@ -19,18 +19,20 @@
             android:layout_marginStart="@dimen/margin_start"
             android:layout_weight="1"
             android:contentDescription="@string/input_icon"
-            app:srcCompat="@drawable/input" />
+            app:srcCompat="@drawable/input"
+            android:layout_marginLeft="@dimen/margin_start" />
 
         <CheckedTextView
             android:id="@+id/checkedTextView1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/margin_start"
+            android:layout_marginLeft="@dimen/margin_start"
             android:layout_marginEnd="@dimen/margin_end_input"
+            android:layout_marginRight="@dimen/margin_end_input"
             android:layout_weight="1"
             android:checkMark="?android:attr/listChoiceIndicatorMultiple"
             android:checked="true"
-            android:contextClickable="true"
             android:fontFamily="sans-serif-thin"
             android:gravity="center_vertical"
             android:text="@string/input"

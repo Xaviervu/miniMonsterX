@@ -1,4 +1,4 @@
-package ru.vegax.xavier.miniMonsterX;
+package ru.vegax.xavier.minimonsterx;
 
 import org.junit.Test;
 

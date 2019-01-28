@@ -1,4 +1,4 @@
-package ru.vegax.xavier.miniMonsterX;
+package ru.vegax.xavier.minimonsterx;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
