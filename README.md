@@ -17,11 +17,11 @@ What's upcomming
 Getting Started
 ---------------
 1. Connect your Mini-monster controller and set-up its address (default https://192.168.0.12/password )and input and outputs. 
-1. Download the code.
-2. Open the code in Android Studio.
-3. Run the app.
-4. Set the address of the controller (same as in 1.)
-5. Connect 
+2. Download the code.
+3. Open the code in Android Studio.
+4. Run the app.
+5. Set the address of the controller (same as in 1.)
+6. Connect 
 
 
 License
