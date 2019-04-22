@@ -1,9 +1,8 @@
-package ru.vegax.xavier.minimonsterx
+package ru.vegax.xavier.minimonsterx.activities
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
@@ -12,6 +11,8 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import ru.vegax.xavier.minimonsterx.R
 import ru.vegax.xavier.minimonsterx.R.*
 
 class SettingsActivity : AppCompatActivity() {
@@ -74,7 +75,7 @@ class SettingsActivity : AppCompatActivity() {
         var cancel = false
         var focusView: View? = null
 
-        // Check for a device name, valid password, if the user entered one.
+        // Check for a device deviceName, valid password, if the user entered one.
         if (TextUtils.isEmpty(devName)) {
             mTxtVdeviceName!!.error = getString(string.dev_name_required)
             cancel = true

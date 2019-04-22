@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "633709957523",
+    "firebase_url": "https://minimonster-x.firebaseio.com",
+    "project_id": "minimonster-x",
+    "storage_bucket": "minimonster-x.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:633709957523:android:8e4626bf4ff1a185",
+        "android_client_info": {
+          "package_name": "ru.vegax.xavier.minimonsterx"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "633709957523-etjmchv92sjqiofp2o66v36a752rvh94.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVYqsLIgFhOSNPTCUH0MxeRNwMVtyDms8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "633709957523-etjmchv92sjqiofp2o66v36a752rvh94.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

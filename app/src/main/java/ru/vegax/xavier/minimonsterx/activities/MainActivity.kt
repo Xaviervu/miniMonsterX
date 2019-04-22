@@ -1,22 +1,24 @@
-package ru.vegax.xavier.minimonsterx
+package ru.vegax.xavier.minimonsterx.activities
 
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 
+import androidx.appcompat.app.AppCompatActivity
+
 import android.os.Bundle
-import android.support.design.widget.NavigationView
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
 
 
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
+import ru.vegax.xavier.minimonsterx.R
 import java.util.HashSet
 import ru.vegax.xavier.minimonsterx.iodata.IOFragment
 import ru.vegax.xavier.minimonsterx.select_device.DeviceSelectFragment
@@ -25,11 +27,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var mUrlAddress: String = ""
     private var mUrlPassword: String = ""
 
-    private var mUrlJson: String = ""
-    private var mUrlMain: String = ""
     private var mUrlBase: String = ""
     private var mCurrName: String = ""
-    private val mDefURL = "http://192.168.0.12/"
+    private val mDefURL = "http://192.168.0.12" // default URL
 
     override fun onCreate(savedInstanceState: Bundle?) {
         getPrefs()
@@ -41,7 +41,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
-
         val toggle = object : ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close) {
@@ -69,24 +68,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             txtVCurrDevice.text = mCurrName
         }
         navigationView.setNavigationItemSelectedListener(this)
-
-
         generateConnStrings()
-
         if (savedInstanceState == null) {
-            val ioFragment = IOFragment.newInstance(mUrlJson, mUrlMain, mUrlBase)
-            // Get the FragmentManager and start a transaction.
+            val ioFragment = IOFragment.newInstance(mUrlBase)
             val fragmentManager = supportFragmentManager
             val fragmentTransaction = fragmentManager.beginTransaction()
-            // Add the SimpleFragment.
             fragmentTransaction.add(R.id.ioFragment, ioFragment).addToBackStack(null).commit()
         }
     }
 
 
-    /**
-     * Handles the Back button: closes the nav drawer.
-     */
     override fun onBackPressed() {
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
         if (drawer != null) {
@@ -105,30 +96,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
-    /**
-     * Inflates the options menu.
-     *
-     * @param menu Menu to inflate
-     * @return Returns true if menu is inflated.
-     */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
-    /**
-     * Handles a click on the Settings item in the options menu.
-     *
-     * @param item Item in options menu that was clicked.
-     * @return Returns true if the item was Settings.
-     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         val id = item.itemId
-
         if (id == R.id.action_refresh) {
             refreshData()
         } else if (id == R.id.action_settings) {
@@ -142,9 +116,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             intent.putExtra(EXTRA_PASS, mUrlPassword)
             intent.putExtra(EXTRA_FOR_CREATION, mCurrName == "") // if there is no current device then open for creation
             val currentFragment = supportFragmentManager.findFragmentById(R.id.ioFragment) as IOFragment?
-
             if (currentFragment != null && currentFragment.isVisible) {
-                currentFragment.setConnData(mUrlJson, mUrlMain, mUrlBase)
+                currentFragment.setConnData(mUrlBase)
                 currentFragment.stopUpdating()
             }
             startActivityForResult(intent, MY_REQUEST_ID)
@@ -154,13 +127,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return super.onOptionsItemSelected(item)
     }
 
-    /**
-     * Handles a navigation drawer item click. It detects which item was
-     * clicked and displays a toast message showing which item.
-     *
-     * @param item Item in the navigation drawer
-     * @return Returns true after closing the nav drawer
-     */
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
         // Handle navigation view item clicks here.
@@ -177,7 +144,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 drawer.closeDrawer(GravityCompat.START)
 
-
                 return true
             }
             R.id.nav_addDevice -> {
@@ -191,7 +157,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 val currentFragment = supportFragmentManager.findFragmentById(R.id.ioFragment) as IOFragment?
 
                 if (currentFragment != null && currentFragment.isVisible) {
-                    currentFragment.setConnData(mUrlJson, mUrlMain, mUrlBase)
+                    currentFragment.setConnData(mUrlBase)
                     currentFragment.stopUpdating()
                 }
 
@@ -223,8 +189,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun generateConnStrings() {
-        mUrlJson = joinStrings(mUrlAddress, mUrlPassword, URL_SUFFIX_JSON)
-        mUrlMain = joinStrings(mUrlAddress, mUrlPassword, URL_SUFFIX_MAIN)
         mUrlBase = joinStrings(mUrlAddress, mUrlPassword, "/")
     }
 
@@ -257,7 +221,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             } else {
                 mCurrName = set.toTypedArray()[0] as String
             }
-            mUrlAddress = preferences.getString(PREFF_URL + mCurrName, "http://192.168.0.12/") ?: "http://192.168.0.12/"
+            mUrlAddress = preferences.getString(PREFF_URL + mCurrName, "http://192.168.0.12") ?: "http://192.168.0.12"
             mUrlPassword = preferences.getString(PREFF_PASS + mCurrName, "password") ?: "password"
         } else {
             mCurrName = ""
@@ -358,7 +322,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val currentFragment = supportFragmentManager.findFragmentById(R.id.ioFragment) as IOFragment?
         if (currentFragment != null && currentFragment.isVisible) {
-            currentFragment.setConnData(mUrlJson, mUrlMain, mUrlBase)
+            currentFragment.setConnData(mUrlBase)
             currentFragment.refreshData()
         }
     }
@@ -377,7 +341,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         const val PREFF_URL = "PREFF_URL"
         const val PREFF_PASS = "PREFF_PASS"
         private const val PREFF_CURR_DEVICE = "PREFF_CURR_DEVICE"
-        const val URL_SUFFIX_MAIN = "/?main="
-        const val URL_SUFFIX_JSON = "/?js="
     }
 }

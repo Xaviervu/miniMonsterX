@@ -4,23 +4,16 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatDialogFragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import ru.vegax.xavier.minimonsterx.MainActivity
+import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import ru.vegax.xavier.minimonsterx.activities.MainActivity
 import ru.vegax.xavier.minimonsterx.R
 
-/**
- * A simple [Fragment] subclass.
- * Activities that contain this fragment must implement the
- * [DeviceSelectFragment.OnFragmentInteractionListener] interface
- * to handle interaction events.
- */
 class DeviceSelectFragment : AppCompatDialogFragment() {
     private lateinit var mListener: OnFragmentInteractionListener
 

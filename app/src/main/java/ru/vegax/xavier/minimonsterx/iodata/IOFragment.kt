@@ -2,69 +2,65 @@ package ru.vegax.xavier.minimonsterx.iodata
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.Switch
-import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import kotlinx.android.synthetic.main.io_data_fragment.*
 
 import java.util.ArrayList
 
-import ru.vegax.xavier.minimonsterx.iodata.dataLoader.DataLoader
-import ru.vegax.xavier.minimonsterx.MainActivity
+import ru.vegax.xavier.minimonsterx.activities.MainActivity
 import ru.vegax.xavier.minimonsterx.R
+import ru.vegax.xavier.minimonsterx.activities.IODataViewModel
+import ru.vegax.xavier.minimonsterx.repository.LoadingStatus
 
 
-class IOFragment : Fragment() {
+class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener  {
 
 
-    private var mUrlJSon: String =""
-    private var mUrlHtml: String = ""
+    val TAG = "XavvIOFragment"
+
     private var mUrlBase: String = ""
 
-    private lateinit var mProgBarDownload: ProgressBar 
-    private lateinit var mIoData: ArrayList<IOItem> 
+    private lateinit var mIoData: ArrayList<IOItem>
     private lateinit var mAdapter: IOAdapter
-    private lateinit var mTxtVdeviceName: TextView
-    private lateinit var mDataLoader: DataLoader
-    private lateinit var mRecyclerView: RecyclerView
 
+    private lateinit var mRecyclerView: RecyclerView
+    private val viewModel by lazy {
+        ViewModelProviders.of(this).get(IODataViewModel::class.java)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-            mUrlJSon = arguments?.getString(ARG_URL_JSON) ?: ""
-            mUrlHtml = arguments?.getString(ARG_URL_HTML) ?: ""
             mUrlBase = arguments?.getString(ARG_URL_BASE) ?: ""
-      
+
+          //  viewModel.getDataCyclically(mUrlBase)
     }
+
+
+
+    private lateinit var swipeContainer: SwipeRefreshLayout
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.io_data_fragment, container, false)
 
-        mProgBarDownload = v.findViewById(R.id.progBarDownloadJS)
+        swipeContainer = v.findViewById(R.id.swipe_container)
+        swipeContainer.setOnRefreshListener (this)
 
-        mProgBarDownload.progress = 100
-
-
-        mTxtVdeviceName = v.findViewById(R.id.txtVdeviceName)
-
-        //Initialize the RecyclerView
         mRecyclerView = v.findViewById(R.id.recyclerView)
 
-        //Set the Layout Manager
         mRecyclerView.layoutManager = LinearLayoutManager(v.context)
 
-        //Initialize the ArrayLIst that will contain the data
         mIoData = ArrayList()
 
-        //Initialize the adapter and set it ot the RecyclerView
 
         mAdapter = object : IOAdapter(v.context, mIoData) {
             override fun onLongClick(v: View): Boolean {
@@ -78,61 +74,41 @@ class IOFragment : Fragment() {
 
         }
 
-
         mRecyclerView.adapter = mAdapter
-
-        val sharedPreferences = v.context.getSharedPreferences(MainActivity.MY_PREFS, Context.MODE_PRIVATE)
-
-        mDataLoader = object : DataLoader(mIoData, sharedPreferences, mUrlJSon, mUrlHtml, mUrlBase) {
-            override fun notifyDataChanged() {
-                var isButtonChanging = false
-                for (i in 0 until DataLoader.PORT_NUMBER) {
-
-                    isButtonChanging = isButtonChanging or mIoData[i].isChanging // if at least one element is being edited
-
-                }
-                if (!isButtonChanging) {
-                    mAdapter.notifyDataSetChanged()
-                }
-                mProgBarDownload.isIndeterminate = false
-                mRecyclerView.visibility = View.VISIBLE
-
-
-            }
-
-            override fun notifyError(e: String) {
-                Toast.makeText(v.context, getString(R.string.no_conn), Toast.LENGTH_SHORT).show()
-                mProgBarDownload.isIndeterminate = false
-                mRecyclerView.visibility = View.INVISIBLE
-                mTxtVdeviceName.text = getString(R.string.no_conn)
-            }
-
-            override fun setDeviceId(deviceId: String) {
-                v.post {
-                    mTxtVdeviceName.text = deviceId//send to a UI thread!
-                }
-
-            }
-
-        }
-        refreshData()
-
+//        val sharedPreferences = v.context.getSharedPreferences(MainActivity.MY_PREFS, Context.MODE_PRIVATE)
+        observeViewModel()
         return v
     }
+    private fun observeViewModel() {
+        viewModel.controlData.observe(this, Observer {
+            mIoData.clear()
+            mIoData.addAll(it)
+            mAdapter.notifyDataSetChanged()
+        })
+        viewModel.loadingStatus.observe(this,Observer{
+            when(it!!){
+                LoadingStatus.LOADING -> swipeContainer.isRefreshing = true
 
-
+                LoadingStatus.NOT_LOADING  -> swipeContainer.isRefreshing = false
+                LoadingStatus.ERROR -> {
+                    swipeContainer.isRefreshing = false
+                    Toast.makeText(activity,getString(R.string.cant_update),Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
+    }
+    override fun onRefresh() {
+        viewModel.getDataCyclically(mUrlBase)
+    }
     override fun onDestroy() {
-        mDataLoader.cancelTasks()
-
+        viewModel.dispose()
         super.onDestroy()
     }
     
 
-    fun setConnData(urlJSon: String, urlHtml: String, urlBase: String) {
-        mUrlJSon = urlJSon
-        mUrlHtml = urlHtml
+    fun setConnData( urlBase: String) {
         mUrlBase = urlBase
-        mDataLoader.setConnData(urlJSon, urlHtml, urlBase)
+        viewModel.getDataCyclically(mUrlBase)
     }
 
     //handle click from item
@@ -140,22 +116,16 @@ class IOFragment : Fragment() {
     fun setOutput(view: View) {
         val curPos = view.tag as Int
         val currentItem = mIoData[curPos]
-        val suffix: String
+//        val suffix: String
         if (currentItem.isImpulse) {
-            // set the suffix string for pressing turning the output on or off for a period of time
-            suffix = URL_SUFFIX_IMPULSE + (curPos + 1) //
             currentItem.isChanging = false
-            mDataLoader.setOutputs(suffix)
+            viewModel.setImpulse(mUrlBase,curPos+1)
             (view as Switch).isChecked = currentItem.isOn
         } else {
             (view as Switch).isChecked = currentItem.isOn
-            // set the suffix string for pressing turning the output on or off
-            suffix = URL_SUFFIX_SET + (curPos + 1) + "-" + if (currentItem.isOn) "0" else "1" //"/?sw=i-1" for turning on i - port number starting from 1
             currentItem.isChanging = false
-            mDataLoader.setOutputs(suffix)
-
+            viewModel.setOutput(mUrlBase,curPos+1,!currentItem.isOn)
         }
-
     }
     //handle long click from item
 
@@ -173,15 +143,12 @@ class IOFragment : Fragment() {
     }
 
     fun stopUpdating() {
-        mProgBarDownload.isIndeterminate = false
-        mDataLoader.stopUptading()
+        viewModel.dispose()
     }
 
     fun refreshData() {
-        if (mUrlHtml != "") {
-            mProgBarDownload.isIndeterminate = true
-
-            mDataLoader.refreshData()
+        if (mUrlBase != "") {
+            viewModel.getDataCyclically(mUrlBase)
         } else {
             mIoData.clear()
             mRecyclerView.adapter?.notifyDataSetChanged()
@@ -196,27 +163,19 @@ class IOFragment : Fragment() {
     }
 
     fun cancelTasks() {
-        mDataLoader.stopTasks()
-        mProgBarDownload.isIndeterminate = false
+        viewModel.dispose()
     }
 
     companion object {
-        private const val ARG_URL_JSON = "URL_EXTRA_JSON"
-        private const val ARG_URL_HTML = "URL_EXTRA_HTML"
         private const val ARG_URL_BASE = "URL_EXTRA_BASE"
-        private const val URL_SUFFIX_IMPULSE= "/?rst="
-        private const val URL_SUFFIX_SET = "/?sw="
-
         const val PREFF_IMPULSE = "PREFF_IMPULSE"
 
-        fun newInstance(urlJSon: String, urlHtml: String, urlBase: String): IOFragment {
+        fun newInstance(urlBase: String): IOFragment {
             val fragment = IOFragment()
             val args = Bundle()
-            args.putString(ARG_URL_JSON, urlJSon)
-            args.putString(ARG_URL_HTML, urlHtml)
             args.putString(ARG_URL_BASE, urlBase)
             fragment.arguments = args
             return fragment
         }
     }
-}// Required empty public constructor
+}

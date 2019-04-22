@@ -17,17 +17,16 @@
             android:layout_width="@dimen/input_output_icon_size"
             android:layout_height="@dimen/input_output_icon_size"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="@dimen/margin_start"
             android:layout_weight="1"
             android:contentDescription="@string/output_icon"
-            app:srcCompat="@drawable/output" />
+            app:srcCompat="@drawable/output"
+            android:layout_marginLeft="@dimen/margin_start"
+            android:layout_marginStart="@dimen/margin_start" />
 
         <Switch
             android:id="@+id/switch1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/margin_start"
-            android:layout_marginEnd="@dimen/margin_end_output"
             android:layout_weight="1"
             android:checked="false"
             android:defaultValue="true"
@@ -35,7 +34,11 @@
             android:fontFamily="sans-serif-thin"
             android:gravity="center_vertical"
             android:text="@string/set_output"
-            android:textSize="@dimen/input_output_text_size" />
+            android:textSize="@dimen/input_output_text_size"
+            android:layout_marginLeft="@dimen/margin_start"
+            android:layout_marginRight="@dimen/margin_end_output"
+            android:layout_marginStart="@dimen/margin_start"
+            android:layout_marginEnd="@dimen/margin_end_output" />
 
     </LinearLayout>
 

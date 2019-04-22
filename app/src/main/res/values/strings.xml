@@ -26,9 +26,7 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+
     <string name="passwordHint">password</string>
     <string name="refresh_cyclically">Refresh cyclically</string>
     <string name="set_output">output</string>
@@ -57,5 +55,6 @@
 
     <string name="parameters">parameters</string>
     <string name="home_picture">home picture</string>
+    <string name="cant_update">Unable to update</string>
 
 </resources>
