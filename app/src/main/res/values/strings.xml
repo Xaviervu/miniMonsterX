@@ -56,5 +56,10 @@
     <string name="parameters">parameters</string>
     <string name="home_picture">home picture</string>
     <string name="cant_update">Unable to update</string>
+    <string name="delete_device">Delete a device</string>
+    <string name="sure_delete_device">Are you sure you want to delete a device? tehe settings and password will be deleted as well</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="no_devices">No devices created</string>
 
 </resources>

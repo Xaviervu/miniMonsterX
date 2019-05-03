@@ -13,39 +13,22 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import kotlinx.android.synthetic.main.io_data_fragment.*
-
-import java.util.ArrayList
-
-import ru.vegax.xavier.minimonsterx.activities.MainActivity
 import ru.vegax.xavier.minimonsterx.R
 import ru.vegax.xavier.minimonsterx.activities.IODataViewModel
+import ru.vegax.xavier.minimonsterx.activities.MainActivity.Companion.PREFF_DEV_ID
 import ru.vegax.xavier.minimonsterx.repository.LoadingStatus
+import java.util.*
 
 
-class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener  {
-
-
-    val TAG = "XavvIOFragment"
-
-    private var mUrlBase: String = ""
+class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private lateinit var mIoData: ArrayList<IOItem>
     private lateinit var mAdapter: IOAdapter
 
     private lateinit var mRecyclerView: RecyclerView
     private val viewModel by lazy {
-        ViewModelProviders.of(this).get(IODataViewModel::class.java)
+        ViewModelProviders.of(activity!!).get(IODataViewModel::class.java)
     }
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-            mUrlBase = arguments?.getString(ARG_URL_BASE) ?: ""
-
-          //  viewModel.getDataCyclically(mUrlBase)
-    }
-
-
-
     private lateinit var swipeContainer: SwipeRefreshLayout
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -53,7 +36,7 @@ class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener  {
         val v = inflater.inflate(R.layout.io_data_fragment, container, false)
 
         swipeContainer = v.findViewById(R.id.swipe_container)
-        swipeContainer.setOnRefreshListener (this)
+        swipeContainer.setOnRefreshListener(this)
 
         mRecyclerView = v.findViewById(R.id.recyclerView)
 
@@ -75,9 +58,28 @@ class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener  {
         }
 
         mRecyclerView.adapter = mAdapter
-//        val sharedPreferences = v.context.getSharedPreferences(MainActivity.MY_PREFS, Context.MODE_PRIVATE)
-        observeViewModel()
+
+
         return v
+    }
+
+    override fun onResume() {
+        super.onResume()
+        observeViewModel()
+        getPrefs()
+    }
+
+    private fun getPrefs() {
+        val preferences = activity?.getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE)
+        val currDeviceID = preferences?.getLong(PREFF_DEV_ID, 0L)
+        currDeviceID?.let { viewModel.getDevice(it) }
+    }
+
+    private fun rememberPrefs(homeId: Long) {
+        val preferences = activity?.getSharedPreferences(MY_PREFS, Context.MODE_PRIVATE)
+        val editor = preferences?.edit()
+        editor?.putLong(PREFF_DEV_ID, homeId)
+        editor?.apply()
     }
     private fun observeViewModel() {
         viewModel.controlData.observe(this, Observer {
@@ -85,75 +87,82 @@ class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener  {
             mIoData.addAll(it)
             mAdapter.notifyDataSetChanged()
         })
-        viewModel.loadingStatus.observe(this,Observer{
-            when(it!!){
-                LoadingStatus.LOADING -> swipeContainer.isRefreshing = true
-
-                LoadingStatus.NOT_LOADING  -> swipeContainer.isRefreshing = false
-                LoadingStatus.ERROR -> {
-                    swipeContainer.isRefreshing = false
-                    Toast.makeText(activity,getString(R.string.cant_update),Toast.LENGTH_SHORT).show()
+        viewModel.currentDeviceLiveData.observe(this, Observer { curDevice ->
+            if (curDevice != null) {
+                rememberPrefs(curDevice.deviceId)
+            }
+        })
+        viewModel.loadingStatus.observe(this, Observer { loadingStatus ->
+            if (loadingStatus != null) {
+                when (loadingStatus) {
+                    LoadingStatus.LOADING -> swipeContainer.isRefreshing = true
+                    LoadingStatus.NOT_LOADING -> swipeContainer.isRefreshing = false
+                    LoadingStatus.ERROR -> {
+                        updateAdapter()
+                    }
                 }
             }
         })
     }
-    override fun onRefresh() {
-        viewModel.getDataCyclically(mUrlBase)
+
+    private fun updateAdapter() {
+        swipeContainer.isRefreshing = false
+        mIoData.clear()
+        mAdapter.notifyDataSetChanged()
+        Toast.makeText(activity, getString(R.string.cant_update), Toast.LENGTH_SHORT).show()
     }
+
+    override fun onRefresh() {
+        refreshData()
+    }
+
     override fun onDestroy() {
-        viewModel.dispose()
+        viewModel.stopLoading()
         super.onDestroy()
     }
-    
 
-    fun setConnData( urlBase: String) {
-        mUrlBase = urlBase
-        viewModel.getDataCyclically(mUrlBase)
+    fun refreshData() {
+        viewModel.curDevice?.let { viewModel.getDataCyclically() }
+        if (viewModel.curDevice == null) {
+            updateAdapter()
+        }
     }
-
     //handle click from item
 
     fun setOutput(view: View) {
-        val curPos = view.tag as Int
-        val currentItem = mIoData[curPos]
-//        val suffix: String
-        if (currentItem.isImpulse) {
-            currentItem.isChanging = false
-            viewModel.setImpulse(mUrlBase,curPos+1)
-            (view as Switch).isChecked = currentItem.isOn
-        } else {
-            (view as Switch).isChecked = currentItem.isOn
-            currentItem.isChanging = false
-            viewModel.setOutput(mUrlBase,curPos+1,!currentItem.isOn)
+        val url = viewModel.curDevice?.url
+        if (url != null) {
+            val curPos = view.tag as Int
+            val currentItem = mIoData[curPos]
+            if (currentItem.isImpulse) {
+                currentItem.isChanging = false
+                viewModel.setImpulse(url, curPos + 1)
+                (view as Switch).isChecked = currentItem.isOn
+            } else {
+                (view as Switch).isChecked = currentItem.isOn
+                currentItem.isChanging = false
+                viewModel.setOutput(url, curPos + 1, !currentItem.isOn)
+            }
         }
     }
     //handle long click from item
 
     fun impulseOutput(view: View) {
-        val curPos = view.tag as Int
-        val currentItem = mIoData[curPos]
-
-        currentItem.isImpulse = !currentItem.isImpulse
-        val preferences = context?.getSharedPreferences(MainActivity.MY_PREFS, Context.MODE_PRIVATE)
-        val editor = preferences?.edit()
-        editor?.putBoolean(PREFF_IMPULSE + mUrlBase + curPos, currentItem.isImpulse)
-        editor?.apply()
-        mAdapter.notifyItemChanged(curPos)
-        currentItem.isChanging = false
+        val curDevice = viewModel.curDevice
+        if (curDevice != null) {
+            val curPos = view.tag as Int
+            val currentItem = mIoData[curPos]
+            curDevice.impulseTypes[curPos] = !curDevice.impulseTypes[curPos]
+            viewModel.insert(curDevice)
+            mAdapter.notifyItemChanged(curPos)
+            currentItem.isChanging = false
+        }
     }
 
     fun stopUpdating() {
-        viewModel.dispose()
+        viewModel.stopLoading()
     }
 
-    fun refreshData() {
-        if (mUrlBase != "") {
-            viewModel.getDataCyclically(mUrlBase)
-        } else {
-            mIoData.clear()
-            mRecyclerView.adapter?.notifyDataSetChanged()
-        }
-    }
 
     fun clearData() {
         mIoData.clear()
@@ -163,19 +172,12 @@ class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener  {
     }
 
     fun cancelTasks() {
-        viewModel.dispose()
+        viewModel.stopLoading()
     }
 
     companion object {
-        private const val ARG_URL_BASE = "URL_EXTRA_BASE"
-        const val PREFF_IMPULSE = "PREFF_IMPULSE"
+        const val TAG = "XavvIOFragment"
+        const val MY_PREFS = "my_prefs"
 
-        fun newInstance(urlBase: String): IOFragment {
-            val fragment = IOFragment()
-            val args = Bundle()
-            args.putString(ARG_URL_BASE, urlBase)
-            fragment.arguments = args
-            return fragment
-        }
     }
 }

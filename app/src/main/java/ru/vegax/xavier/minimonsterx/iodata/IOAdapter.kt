@@ -106,5 +106,6 @@ internal constructor(private val mContext: Context, //Member variables
     companion object {
         private const val INPUT_ELEMENT = 0
         private const val OUTPUT_ELEMENT = 1
+
     }
 }

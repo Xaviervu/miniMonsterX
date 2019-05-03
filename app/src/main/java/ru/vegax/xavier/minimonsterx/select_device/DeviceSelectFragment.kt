@@ -7,15 +7,19 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatDialogFragment
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import ru.vegax.xavier.minimonsterx.activities.MainActivity
 import ru.vegax.xavier.minimonsterx.R
+import ru.vegax.xavier.minimonsterx.activities.IODataViewModel
+
 
 class DeviceSelectFragment : AppCompatDialogFragment() {
     private lateinit var mListener: OnFragmentInteractionListener
+    private val viewModel by lazy {
+        ViewModelProviders.of(activity!!).get(IODataViewModel::class.java)
+    }
 
     override fun onResume() {
         super.onResume()
@@ -28,8 +32,8 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
         val inflater = activity?.layoutInflater
-        val  parent : ViewGroup? = null
-        val view = inflater?.inflate(R.layout.fragment_select_device,parent,false)
+        val parent: ViewGroup? = null
+        val view = inflater?.inflate(R.layout.fragment_select_device, parent, false)
         builder.setView(view)
 
         //Initialize the RecyclerView
@@ -39,49 +43,49 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
         recVListOfDevices?.layoutManager = LinearLayoutManager(view?.context)
 
         //Initialize the ArrayLIst that will contain the data
-        val preferences = view?.context?.getSharedPreferences(MainActivity.MY_PREFS, Context.MODE_PRIVATE)
-        val set = preferences?.getStringSet(MainActivity.PREFF_DEV_NAME, null)
-        val currDevice = arguments?.getString(EXTRA_DEVICE_NAME)
-        if (set?.size ?: 0 > 0 && view != null && currDevice != null) {
-            val adapter = object : DeviceSelectAdapter(view.context, set as Set<String>, currDevice) {
+
+        val currDevice = viewModel.curDevice
+        val deviceList = viewModel.allDevices.value
+        if (deviceList != null && view != null) {
+            val adapter = object : DeviceSelectAdapter(view.context, deviceList, currDevice) {
                 override fun onClick(v: View) {
                     if (v is Button) {
                         // delete item
-                        onDeleteItem(v.getTag() as String)
+                        onDeleteItem(v.tag as Long)
                     } else {
-                        onButtonPressed((v as TextView).text.toString())
+                        onButtonPressed(v.tag as Long)
                     }
                     dialog.dismiss()
                 }
             }
 
 
-            //Initialize the adapter and set it ot the RecyclerView
             recVListOfDevices?.adapter = adapter
         }
         return builder.create()
     }
 
-    fun onButtonPressed(deviceName: String) {
-        mListener.onFragmentResult(deviceName)
+    fun onButtonPressed(deviceId: Long) {
+        mListener.onFragmentResult(deviceId)
     }
 
-    fun onDeleteItem(deviceName: String) {
+    fun onDeleteItem(deviceId: Long) {
         // create a confirmation dialog
         val builder = AlertDialog.Builder(context)
-        builder.setTitle("Delete a device")
-        builder.setMessage("Are you sure you want to delete a device? tehe settings and password will be deleted as well")
-        builder.setPositiveButton("YES") { _, _ ->
-            mListener.onDeleteItem(deviceName)
+        builder.setTitle(getString(R.string.delete_device))
+        builder.setMessage(getString(R.string.sure_delete_device))
+        builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
+            mListener.onDeleteItem(deviceId)
 
         }
-        builder.setNegativeButton("NO") { _, _ ->
+        builder.setNegativeButton(getString(R.string.no)) { _, _ ->
             onStop()
         }
         val dialog: AlertDialog = builder.create()
 
         dialog.show()
     }
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
@@ -92,25 +96,11 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
     }
 
 
-    fun newInstance(currentDevice: String): DeviceSelectFragment {
-        val fragment = DeviceSelectFragment()
-
-        val bundle = Bundle()
-        bundle.putString(EXTRA_DEVICE_NAME, currentDevice)
-        fragment.arguments = bundle
-
-        return fragment
-    }
-
-
     interface OnFragmentInteractionListener {
-        fun onFragmentResult(deviceName: String)
+        fun onFragmentResult(deviceId: Long)
 
-        fun onDeleteItem(deviceName: String)
+        fun onDeleteItem(deviceId: Long)
     }
 
-    companion object {
-
-        private const val EXTRA_DEVICE_NAME = "DEVICE_NAME_EXTRA"
-    }
+    companion object
 }// Required empty public constructor

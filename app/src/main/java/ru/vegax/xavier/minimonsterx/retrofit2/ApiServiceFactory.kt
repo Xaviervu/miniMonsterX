@@ -13,7 +13,7 @@ object ApiServiceFactory {
     fun createService(): ControlDataApi {
 
         val httpClient = OkHttpClient.Builder()
-        httpClient.addInterceptor(jsonInterceptor())
+        httpClient.addInterceptor(JsonInterceptor())
         return Retrofit.Builder()
                 .baseUrl(defUrl)
                 .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))

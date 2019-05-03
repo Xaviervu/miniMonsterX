@@ -1,18 +1,19 @@
 package ru.vegax.xavier.minimonsterx.select_device
 
 import android.content.Context
-import androidx.core.content.ContextCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import ru.vegax.xavier.minimonsterx.R
+import ru.vegax.xavier.minimonsterx.repository.DeviceData
 
 abstract class DeviceSelectAdapter
 internal constructor(private val mContext: Context, //Member variables
-                     private val mItemsData: Set<String>, private val mCurrDevice: String) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnClickListener {
+                     private val mItemsData: List<DeviceData>, private val mCurrDevice: DeviceData?) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnClickListener {
 
     override fun getItemCount(): Int {
 
@@ -28,7 +29,7 @@ internal constructor(private val mContext: Context, //Member variables
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         val viewHolder = holder as ViewHolder
-        val currentItem = mItemsData.toTypedArray()[position]
+        val currentItem = mItemsData[position]
         viewHolder.bindTo(currentItem)
         //Get current item
 
@@ -37,8 +38,9 @@ internal constructor(private val mContext: Context, //Member variables
 
             viewHolder.txtVDevice.setTextColor(ContextCompat.getColor(context, R.color.ic_toggle_background))
         }
+        viewHolder.txtVDevice.tag = currentItem.deviceId
         viewHolder.txtVDevice.setOnClickListener(this)
-        viewHolder.btnDelete.tag = currentItem
+        viewHolder.btnDelete.tag = currentItem.deviceId
         viewHolder.btnDelete.setOnClickListener(this)
 
     }
@@ -51,8 +53,8 @@ internal constructor(private val mContext: Context, //Member variables
 
         val btnDelete: Button = itemView.findViewById(R.id.btnDelete)
 
-        fun bindTo(currentDevice: String) {
-            txtVDevice.text = currentDevice
+        fun bindTo(currentDevice: DeviceData) {
+            txtVDevice.text = currentDevice.deviceName
         }
 
     }
