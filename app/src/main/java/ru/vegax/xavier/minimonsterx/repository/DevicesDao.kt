@@ -12,11 +12,14 @@ interface DevicesDao {
     @Query("SELECT * from device_table WHERE deviceId = :deviceId LIMIT 1")
     fun currDevice(deviceId: Long): DeviceData
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(devices: List<DeviceData>)
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(singleDevice: DeviceData): Long
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    fun update(singleDevice: DeviceData)
 
     @Query("DELETE FROM device_table")
     fun deleteAll()

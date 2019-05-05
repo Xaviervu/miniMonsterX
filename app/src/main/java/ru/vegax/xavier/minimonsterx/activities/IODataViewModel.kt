@@ -49,6 +49,10 @@ internal class IODataViewModel(app: Application) : AndroidViewModel(app) {
         getDevice(newId)
     }
 
+    fun update(deviceData: DeviceData) = ioThread {
+        dao.update(deviceData)
+    }
+
     fun remove(device: DeviceData) = ioThread {
         dao.delete(device)
     }
@@ -75,9 +79,9 @@ internal class IODataViewModel(app: Application) : AndroidViewModel(app) {
 
     fun getDataCyclically() {
         loadCyclically = true
-        val curDevice = curDevice
-        if (curDevice != null) {
-            val url = "${curDevice.url}${curDevice.password}/?js="
+        val curDev = curDevice
+        if (curDev != null) {
+            val url = "${curDev.url}${curDev.password}/?js="
             mLoadingStatus.postValue(LoadingStatus.LOADING)
             cyclicRequest =
                     Flowable.interval(0L, REFRESH_TIME, TimeUnit.MILLISECONDS)
@@ -98,35 +102,41 @@ internal class IODataViewModel(app: Application) : AndroidViewModel(app) {
                                     },
                                     {
                                         cyclicRequest.dispose()
-                                        Log.d(TAG, it.message)
+                                        Log.d(TAG, it.message ?: "error loading data Cyclically")
                                         mLoadingStatus.postValue(LoadingStatus.ERROR)
-                                    },
-                                    {
-                                        println("onComplete")
-
                                     })
         }
     }
 
 
-    fun setOutput(baseUrl: String, outputN: Int, on: Boolean) { //set outputN on or off
-        val url = "$baseUrl?sw=$outputN-" + (if (on) "1" else {
-            "0"
-        }) //?sw={output}-{on} outputNumber 1..6; on = "1" off = "0"
-        outRequest = apiService.setOutput(url).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onError = { mLoadingStatus.postValue(LoadingStatus.ERROR) }
-                )
+    fun setOutput(outputN: Int, on: Boolean) { //set outputN on or off
+        val curDev = curDevice
+        if (curDev != null) {
+            val url = "${curDev.url}${curDev.password}/?sw=$outputN-" + if (on) "1" else "0" //?sw={output}-{on} outputNumber 1..6; on = "1" off = "0"
+            outRequest = apiService.setOutput(url).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy(
+                            onError = {
+                                Log.d(TAG, it.message ?: "error setting output")
+                                mLoadingStatus.postValue(LoadingStatus.ERROR)
+                            }
+                    )
+        }
     }
 
-    fun setImpulse(baseUrl: String, outputN: Int) { //toggle outputN for n seconds (time set up at minimonsterController
-        val url = "$baseUrl?rst=$outputN"  //"?rst={output}" outputNumber 1..6
-        impulseRequest = apiService.setImpulse(url).subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                        onError = { mLoadingStatus.postValue(LoadingStatus.ERROR) }
-                )
+    fun setImpulse(outputN: Int) { //toggle outputN for n seconds (time set up at minimonsterController
+        val curDev = curDevice
+        if (curDev != null) {
+            val url = "${curDev.url}${curDev.password}/?rst=$outputN" //"?rst={output}" outputNumber 1..6
+            impulseRequest = apiService.setImpulse(url).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeBy(
+                            onError = {
+                                Log.d(TAG, it.message ?: "error setting impulse")
+                                mLoadingStatus.postValue(LoadingStatus.ERROR)
+                            }
+                    )
+        }
     }
 
     fun stopLoading() {
@@ -149,9 +159,9 @@ internal class IODataViewModel(app: Application) : AndroidViewModel(app) {
                 inN++
                 "Input$inN"
             }
-            // todo: get names and impulse from db
-            // todo make it work as is changing
-            IOItem(name, isOutput, data.prt[i] == 1, false, false)
+            IOItem(curDevice?.portNames?.get(i)
+                    ?: name, isOutput, data.prt[i] == 1, curDevice?.impulseTypes?.get(i)
+                    ?: false, false)
         }
     }
 

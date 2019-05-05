@@ -15,7 +15,7 @@ import java.util.*
 
 abstract class IOAdapter
 internal constructor(private val mContext: Context, //Member variables
-                     private val mItemsData: ArrayList<IOItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnClickListener, View.OnLongClickListener {
+                     private val mItemsData: ArrayList<IOItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnClickListener {
 
     override fun getItemCount(): Int {
 
@@ -54,7 +54,7 @@ internal constructor(private val mContext: Context, //Member variables
                 val viewHolderOutputs = holder as ViewHolderOutputs
                 val currentItem = mItemsData[position]
                 viewHolderOutputs.bindTo(currentItem)
-                val switchItem = viewHolderOutputs.switch
+                val switchItem = viewHolderOutputs.mSwitchOutput
                 switchItem.setOnTouchListener { _, event ->
                     when (event.actionMasked) {
                         MotionEvent.ACTION_MOVE -> true
@@ -71,7 +71,8 @@ internal constructor(private val mContext: Context, //Member variables
                 switchItem.isFocusableInTouchMode = false
                 switchItem.tag = position
                 switchItem.setOnClickListener(this)
-                switchItem.setOnLongClickListener(this)
+                viewHolderOutputs.mImgViewOutputType.tag = position
+                viewHolderOutputs.mImgViewOutputType.setOnClickListener(this)
             }
         }
 
@@ -79,26 +80,26 @@ internal constructor(private val mContext: Context, //Member variables
 
     internal inner class ViewHolderInputs
     (itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val _checkedTextView: CheckedTextView = itemView.findViewById(R.id.checkedTextView1)
+        private val mCheckedTextView: CheckedTextView = itemView.findViewById(R.id.checkedTextView1)
 
         fun bindTo(currentItem: IOItem) {
-            _checkedTextView.text = currentItem.itemName
-            _checkedTextView.isChecked = currentItem.isOn
+            mCheckedTextView.text = currentItem.itemName
+            mCheckedTextView.isChecked = currentItem.isOn
         }
     }
 
     internal inner class ViewHolderOutputs
     (itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val _imgView: ImageView = itemView.findViewById(R.id.imageViewOutputs)
-        val switch: Switch = itemView.findViewById(R.id.switch1)
+        val mImgViewOutputType: ImageView = itemView.findViewById(R.id.imageViewOutputs)
+        val mSwitchOutput: Switch = itemView.findViewById(R.id.switch1)
         fun bindTo(currentItem: IOItem) {
-            switch.text = currentItem.itemName
-            switch.isChecked = currentItem.isOn
+            mSwitchOutput.text = currentItem.itemName
+            mSwitchOutput.isChecked = currentItem.isOn
 
             if (currentItem.isImpulse) {
-                _imgView.setImageResource(R.drawable.output_timer)
+                mImgViewOutputType.setImageResource(R.drawable.output_timer)
             } else {
-                _imgView.setImageResource(R.drawable.output)
+                mImgViewOutputType.setImageResource(R.drawable.output)
             }
         }
     }

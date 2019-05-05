@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Switch
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -46,13 +47,14 @@ class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
 
 
         mAdapter = object : IOAdapter(v.context, mIoData) {
-            override fun onLongClick(v: View): Boolean {
-                impulseOutput(v)
-                return true
-            }
 
             override fun onClick(v: View) {
-                setOutput(v)
+                if (v is Switch) {
+                    setOutput(v)
+
+                } else if (v is ImageView) {
+                    impulseOutput(v)
+                }
             }
 
         }
@@ -136,12 +138,12 @@ class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             val currentItem = mIoData[curPos]
             if (currentItem.isImpulse) {
                 currentItem.isChanging = false
-                viewModel.setImpulse(url, curPos + 1)
+                viewModel.setImpulse(curPos + 1)
                 (view as Switch).isChecked = currentItem.isOn
             } else {
                 (view as Switch).isChecked = currentItem.isOn
                 currentItem.isChanging = false
-                viewModel.setOutput(url, curPos + 1, !currentItem.isOn)
+                viewModel.setOutput(curPos + 1, !currentItem.isOn)
             }
         }
     }
@@ -153,7 +155,7 @@ class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             val curPos = view.tag as Int
             val currentItem = mIoData[curPos]
             curDevice.impulseTypes[curPos] = !curDevice.impulseTypes[curPos]
-            viewModel.insert(curDevice)
+            viewModel.update(curDevice)
             mAdapter.notifyItemChanged(curPos)
             currentItem.isChanging = false
         }

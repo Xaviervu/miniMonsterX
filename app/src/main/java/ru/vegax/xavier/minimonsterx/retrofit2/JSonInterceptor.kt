@@ -11,7 +11,7 @@ class JsonInterceptor : Interceptor {
 
         val response = chain.proceed(request)
         var rawJson = response.body()?.string() ?: ""
-        if (!rawJson.contains("}")) {
+        if (rawJson.startsWith("{") && !rawJson.endsWith("}")) {
             rawJson += "}"
         }
         return response.newBuilder()

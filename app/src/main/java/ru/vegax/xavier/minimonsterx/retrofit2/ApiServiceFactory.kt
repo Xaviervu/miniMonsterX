@@ -8,14 +8,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 object ApiServiceFactory {
-    val defUrl = "http://192.168.0.13/password/"
+    private const val DEF_URL = "http://192.168.1.12"
 
     fun createService(): ControlDataApi {
 
         val httpClient = OkHttpClient.Builder()
         httpClient.addInterceptor(JsonInterceptor())
         return Retrofit.Builder()
-                .baseUrl(defUrl)
+                .baseUrl(DEF_URL)
                 .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(httpClient.build())
