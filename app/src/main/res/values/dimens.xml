@@ -15,8 +15,8 @@
     <dimen name="login_height">95dp</dimen>
     <dimen name="title">38sp</dimen>
     <dimen name="popup_width">280dp</dimen>
-    <dimen name="input_output_icon_size">60dp</dimen>
-    <dimen name="input_output_text_size">30sp</dimen>
+    <dimen name="input_output_icon_size">24dp</dimen>
+    <dimen name="input_output_text_size">24sp</dimen>
     <dimen name="device_name_width">130dp</dimen>
     <dimen name="text_padding_select_dev">14dp</dimen>
 </resources>

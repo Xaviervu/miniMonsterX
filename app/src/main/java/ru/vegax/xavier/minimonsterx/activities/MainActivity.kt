@@ -64,10 +64,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val navigationView = findViewById<NavigationView>(R.id.nav_view)
 
         val header = navigationView.getHeaderView(0)
-        mTxtVCurrDevice = header.findViewById<TextView>(R.id.txtVCurrentDevice)
+        mTxtVCurrDevice = header.findViewById(R.id.txtVCurrentDevice)
 
         navigationView.setNavigationItemSelectedListener(this)
-        //  generateConnStrings()
         if (savedInstanceState == null) {
             mIOFragment = IOFragment()
             val fragmentManager = supportFragmentManager
