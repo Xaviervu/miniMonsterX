@@ -8,9 +8,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:633709957523:android:8e4626bf4ff1a185",
+        "mobilesdk_app_id": "1:633709957523:android:d72c05f07aef2804",
         "android_client_info": {
-          "package_name": "ru.vegax.xavier.minimonsterx"
+          "package_name": "ru.vegax.xavier.miniMonsterX"
         }
       },
       "oauth_client": [

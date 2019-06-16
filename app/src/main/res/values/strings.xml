@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Mini Monster X</string>
     <string name="action_settings" tools:ignore="ExtraTranslation">Settings</string>
-    <string name="url">address</string>
+    <string name="url">Address</string>
     <string name="pass" translatable="false">password</string>
     <string name="title_activity_login">Setup</string>
     <string name="current_device">Current device</string>
@@ -9,12 +9,12 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="tab_label1">Inputs/Outputs</string>
     <string name="tab_label2">Fire impulse</string>
-    <string name="tab_main">main settings</string>
-    <string name="tab_reset">reset outputs</string>
-    <string name="tab_thermo">thermal</string>
-    <string name="tab_w_dog">watchdog</string>
+    <string name="tab_main">Main settings</string>
+    <string name="tab_reset">Reset outputs</string>
+    <string name="tab_thermo">Thermal</string>
+    <string name="tab_w_dog">Watchdog</string>
     <string name="tab_pwm">PWM</string>
-    <string name="tab_settings">settings</string>
+    <string name="tab_settings">Settings</string>
 
 
     <!-- Strings related to login -->
@@ -27,39 +27,41 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
 
-    <string name="passwordHint">password</string>
+    <string name="passwordHint">Password</string>
     <string name="refresh_cyclically">Refresh cyclically</string>
-    <string name="set_output">output</string>
-    <string name="device">device</string>
-    <string name="add_device">add device</string>
-    <string name="share">share</string>
-    <string name="send">send</string>
-    <string name="communicate">communicate</string>
-    <string name="action_refresh">refresh</string>
-    <string name="chose_share">chose share</string>
-    <string name="chose_send">chose send</string>
-    <string name="choose_device">choose device</string>
-    <string name="chose_add_device">choose add device</string>
+    <string name="set_output">Output</string>
+    <string name="devices">Devices</string>
+    <string name="add_device">Add device</string>
+    <string name="share">Share</string>
+    <string name="send">Send</string>
+    <string name="communicate">Communicate</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="chose_share">Chose share</string>
+    <string name="chose_send">Chose send</string>
+    <string name="choose_device">Choose device</string>
     <string name="device_url">Device URL</string>
-    <string name="password">password</string>
+    <string name="password">Password</string>
     <string name="ok">OK</string>
     <string name="io_icon">IO icon</string>
-    <string name="input">    input</string>
+    <string name="input">Input</string>
     <string name="device_name">Device name</string>
-    <string name="input_icon">input icon</string>
-    <string name="output_icon">output icon</string>
+    <string name="input_icon">Input icon</string>
+    <string name="output_icon">Output icon</string>
     <string name="no_conn">No connection</string>
     <string name="dev_name_required">Device name required</string>
     <string name="dev_name_already_exists">Device name already exists</string>
-    <string name="add_new_device">Add device</string>
 
-    <string name="parameters">parameters</string>
-    <string name="home_picture">home picture</string>
+    <string name="parameters">Parameters</string>
+    <string name="home_picture">Home picture</string>
     <string name="cant_update">Unable to update</string>
     <string name="delete_device">Delete a device</string>
-    <string name="sure_delete_device">Are you sure you want to delete a device? tehe settings and password will be deleted as well</string>
+    <string name="sure_delete_device">Are you sure you want to delete a device? the settings and password will be deleted as well</string>
     <string name="yes">YES</string>
     <string name="no">NO</string>
     <string name="no_devices">No devices created</string>
+    <string name="cancel">Cancel</string>
+    <string name="port_name">Port name</string>
+    <string name="set_port_name">Set port name</string>
+    <string name="empty_name">Name should\'nt be empty</string>
 
 </resources>
