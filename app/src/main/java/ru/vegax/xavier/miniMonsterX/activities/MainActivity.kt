@@ -17,6 +17,11 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED
+import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
+import com.google.android.play.core.install.model.UpdateAvailability
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_FOR_CREATION
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_NAME
@@ -30,6 +35,7 @@ import ru.vegax.xavier.miniMonsterX.select_device.DeviceSelectFragment
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, DeviceSelectFragment.OnFragmentInteractionListener {
 
+    private lateinit var mUpdateManager: AppUpdateManager
     private var mDeviceList: List<DeviceData>? = null
     private lateinit var mTxtVCurrDevice: TextView
     private var mIOFragment: IOFragment? = null
@@ -75,6 +81,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             fragmentTransaction.add(R.id.ioFragment, fragment).addToBackStack(null).commit()
         }
         observeViewModel()
+        mUpdateManager = AppUpdateManagerFactory.create(this) // in app update
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Toast.makeText(application, "OnResume", Toast.LENGTH_SHORT).show()
+        updateIfRequired()
     }
 
     private fun observeViewModel() {
@@ -167,6 +180,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private fun updateIfRequired() {
+        mUpdateManager.appUpdateInfo
+                .addOnSuccessListener {
+                    Toast.makeText(application, "UpdateAvailable = ${it.updateAvailability()} available code = ${it.availableVersionCode()}", Toast.LENGTH_LONG).show()
+                    if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                            it.isUpdateTypeAllowed(IMMEDIATE) || it.updateAvailability() ==
+                            UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                        mUpdateManager.startUpdateFlowForResult(
+                                it,
+                                IMMEDIATE,
+                                this,
+                                REQUEST_CODE_UPDATE)
+                    }
+                }
+    }
+
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == SETTINGS) {
@@ -190,6 +220,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             } else {
                 refreshData()
+            }
+        } else if (requestCode == REQUEST_CODE_UPDATE) {
+            if (resultCode != RESULT_OK) {
+                if (resultCode == RESULT_CANCELED) {
+                    updateIfRequired()
+                } else if (resultCode == RESULT_IN_APP_UPDATE_FAILED) {
+                    Toast.makeText(application, "Не удалось обновить приложение, попробуйте позднее", Toast.LENGTH_SHORT).show()
+                }
+
             }
         }
     }
@@ -225,6 +264,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     companion object {
+        private const val REQUEST_CODE_UPDATE = 1001
         const val SETTINGS = 1
         const val PORT_NUMBER = 6
 
