@@ -58,4 +58,13 @@
     <string name="title_activity_login">Configuración</string>
     <string name="url">Dirección</string>
     <string name="yes">SI</string>
+    <string name="impulse_setting_error">Error de activación de impulso</string>
+    <string name="loading_data_error">Error de carga de datos</string>
+    <string name="setting_output_error">Error de activación de salida</string>
+    <string name="update_available">Actualización disponible</string>
+    <string name="update_error">No se pudo actualizar la aplicación, por favor trate más tarde</string>
+    <string name="updating">Actualizando…</string>
+    <string name="downloading">Descargando…</string>
+    <string name="update_ready">Instalar actualización</string>
+    <string name="restart">Instalar</string>
 </resources>

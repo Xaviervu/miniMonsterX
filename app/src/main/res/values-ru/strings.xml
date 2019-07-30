@@ -58,4 +58,13 @@
     <string name="title_activity_login">Настройка</string>
     <string name="url">Адрес</string>
     <string name="yes">Да</string>
+    <string name="impulse_setting_error">Ошибка задания импульса</string>
+    <string name="loading_data_error">Ошибка загрузки данных</string>
+    <string name="setting_output_error">Ошибка задания выхода</string>
+    <string name="update_available">Обновление доступно</string>
+    <string name="update_error">Невозможнро обновить приложение, пожалуйста попробуйте позднее</string>
+    <string name="updating">Обновляется…</string>
+    <string name="downloading">Скачивается…</string>
+    <string name="update_ready">Обновление загружено</string>
+    <string name="restart">Запустить</string>
 </resources>

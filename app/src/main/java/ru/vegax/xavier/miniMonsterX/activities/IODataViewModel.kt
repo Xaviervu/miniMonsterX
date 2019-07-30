@@ -11,6 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.auxiliar.ioThread
 import ru.vegax.xavier.miniMonsterX.iodata.IOItem
 import ru.vegax.xavier.miniMonsterX.models.ControlData
@@ -21,7 +22,7 @@ import ru.vegax.xavier.miniMonsterX.retrofit2.ApiServiceFactory
 import java.util.concurrent.TimeUnit
 
 
-internal class IODataViewModel(app: Application) : AndroidViewModel(app) {
+internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
 
 
     private val dao = DevicesDb.get(app).newsDao()
@@ -102,7 +103,8 @@ internal class IODataViewModel(app: Application) : AndroidViewModel(app) {
                                     },
                                     {
                                         cyclicRequest.dispose()
-                                        Log.d(TAG, it.message ?: "error loading data Cyclically")
+                                        Log.d(TAG, it.message
+                                                ?: app.getString(R.string.loading_data_error))
                                         mLoadingStatus.postValue(LoadingStatus.ERROR)
                                     })
         }
@@ -117,7 +119,8 @@ internal class IODataViewModel(app: Application) : AndroidViewModel(app) {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onError = {
-                                Log.d(TAG, it.message ?: "error setting output")
+                                Log.d(TAG, it.message
+                                        ?: app.getString(R.string.setting_output_error))
                                 mLoadingStatus.postValue(LoadingStatus.ERROR)
                             }
                     )
@@ -132,7 +135,8 @@ internal class IODataViewModel(app: Application) : AndroidViewModel(app) {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onError = {
-                                Log.d(TAG, it.message ?: "error setting impulse")
+                                Log.d(TAG, it.message
+                                        ?: app.getString(R.string.impulse_setting_error))
                                 mLoadingStatus.postValue(LoadingStatus.ERROR)
                             }
                     )

@@ -63,5 +63,14 @@
     <string name="port_name">Port name</string>
     <string name="set_port_name">Set port name</string>
     <string name="empty_name">Name should\'nt be empty</string>
+    <string name="impulse_setting_error">Error setting impulse</string>
+    <string name="loading_data_error">Error loading data cyclically</string>
+    <string name="setting_output_error">Error setting output</string>
+    <string name="update_available">Update available</string>
+    <string name="downloading">Downloading…</string>
+    <string name="update_error">Couldn\'t update application, please try later</string>
+    <string name="updating">Updating…</string>
+    <string name="update_ready">An update has just been downloaded</string>
+    <string name="restart">Restart</string>
 
 </resources>
