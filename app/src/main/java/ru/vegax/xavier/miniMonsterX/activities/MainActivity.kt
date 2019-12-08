@@ -12,41 +12,37 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED
-import kotlinx.android.synthetic.main.content_main.*
+import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
+import com.google.android.play.core.install.model.UpdateAvailability
 import ru.vegax.xavier.miniMonsterX.R
-import ru.vegax.xavier.miniMonsterX.activities.AppUpdater.Companion.REQUEST_FLEXIBLE_UPDATE
-import ru.vegax.xavier.miniMonsterX.activities.AppUpdater.Companion.REQUEST_IMMEDIATE_UPDATE
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_FOR_CREATION
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_NAME
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_PASS
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_URL
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.newSettingsIntent
-import ru.vegax.xavier.miniMonsterX.auxiliar.hide
-import ru.vegax.xavier.miniMonsterX.auxiliar.show
 import ru.vegax.xavier.miniMonsterX.iodata.IOFragment
 import ru.vegax.xavier.miniMonsterX.repository.DeviceData
 import ru.vegax.xavier.miniMonsterX.select_device.DeviceSelectFragment
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, DeviceSelectFragment.OnFragmentInteractionListener,
-        AppUpdater.UpdateListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, DeviceSelectFragment.OnFragmentInteractionListener {
 
-
+    private lateinit var mUpdateManager: AppUpdateManager
     private var mDeviceList: List<DeviceData>? = null
     private lateinit var mTxtVCurrDevice: TextView
     private var mIOFragment: IOFragment? = null
     private val viewModel by lazy {
         ViewModelProviders.of(this).get(IODataViewModel::class.java)
     }
-    private lateinit var appUpdater: AppUpdater
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
@@ -85,27 +81,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             fragmentTransaction.add(R.id.ioFragment, fragment).addToBackStack(null).commit()
         }
         observeViewModel()
-        appUpdater = AppUpdater(this, this)
-        btnUpdate.setOnClickListener {
-            btnUpdate.isEnabled = false
-            btnUpdate.hide()
-            appUpdater.startFlexibleUpdate()
-
-        }
-
+        mUpdateManager = AppUpdateManagerFactory.create(this) // in app update
+        updateIfRequired()
     }
 
     override fun onResume() {
         super.onResume()
-        appUpdater.checkUpdating()
+        Toast.makeText(application, "OnResume", Toast.LENGTH_SHORT).show()
+        checkUpdating()
 
     }
 
-
-    override fun onDestroy() {
-        appUpdater.unRegisterListener()
-        super.onDestroy()
-    }
 
 
     private fun observeViewModel() {
@@ -198,75 +184,69 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    private fun updateIfRequired() {
+        mUpdateManager.appUpdateInfo
+                .addOnSuccessListener {
+                    Toast.makeText(application, "onCreate UpdateAvailable = ${it.updateAvailability()} available code = ${it.availableVersionCode()}", Toast.LENGTH_LONG).show()
+                    if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                            it.isUpdateTypeAllowed(IMMEDIATE)) {
+                        mUpdateManager.startUpdateFlowForResult(
+                                it,
+                                IMMEDIATE,
+                                this,
+                                REQUEST_CODE_UPDATE)
 
-    override fun onShowDownload() {
-        btnUpdate.isEnabled = true
-        btnUpdate.text = getString(R.string.update_available)
-        btnUpdate.show()
+                    }
+                }
+    }
+    private fun checkUpdating() {
+        mUpdateManager.appUpdateInfo
+                .addOnSuccessListener {
+                    Toast.makeText(application, "UpdateAvailable = ${it.updateAvailability()} available code = ${it.availableVersionCode()}", Toast.LENGTH_LONG).show()
+                    if (it.updateAvailability() ==
+                            UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+//                        mUpdateManager.startUpdateFlowForResult(
+//                                it,
+//                                IMMEDIATE,
+//                                this,
+//                                REQUEST_CODE_UPDATE)
+                        finish()
+                    }
+                }
     }
 
-    override fun onShowDownloading() {
-        btnUpdate.show()
-        btnUpdate.isEnabled = false
-        btnUpdate.text = getString(R.string.updating)
-    }
-
-    override fun onDownloaded() {
-        popupSnackbarForCompleteUpdate()
-    }
-
-    private fun popupSnackbarForCompleteUpdate() {
-        btnUpdate.hide()
-        Snackbar.make(
-                contentMain,
-                getString(R.string.update_ready),
-                Snackbar.LENGTH_INDEFINITE
-        ).apply {
-            setAction(getString(R.string.restart)) { appUpdater.completeUpdate() }
-            setActionTextColor(ContextCompat.getColor(context, R.color.white))
-            show()
-        }
-    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            SETTINGS -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    val forCreation = data?.getBooleanExtra(EXTRA_FOR_CREATION, false) ?: false
-                    val name = data?.getStringExtra(EXTRA_NAME) ?: ""
-                    val urlAddress = data?.getStringExtra(EXTRA_URL) ?: ""
-                    val password = data?.getStringExtra(EXTRA_PASS) ?: ""
-                    if (forCreation) {
-                        val newDevice = DeviceData(name, urlAddress, password, MutableList(PORT_NUMBER) { "port$it" }, MutableList(PORT_NUMBER) { false })
-                        viewModel.insert(newDevice)
-                    } else {
-                        val curDevice = viewModel.curDevice
-                        if (curDevice != null) {
-                            curDevice.deviceName = name
-                            curDevice.url = urlAddress
-                            curDevice.password = password
-                            viewModel.insert(curDevice)
-                        }
-                    }
-
+        if (requestCode == SETTINGS) {
+            if (resultCode == Activity.RESULT_OK) {
+                val forCreation = data?.getBooleanExtra(EXTRA_FOR_CREATION, false) ?: false
+                val name = data?.getStringExtra(EXTRA_NAME) ?: ""
+                val urlAddress = data?.getStringExtra(EXTRA_URL) ?: ""
+                val password = data?.getStringExtra(EXTRA_PASS) ?: ""
+                if (forCreation) {
+                    val newDevice = DeviceData(name, urlAddress, password, MutableList(PORT_NUMBER) { "port$it" }, MutableList(PORT_NUMBER) { false })
+                    viewModel.insert(newDevice)
                 } else {
-                    refreshData()
-                }
-            }
-            REQUEST_IMMEDIATE_UPDATE -> {
-                if (resultCode != RESULT_OK) {
-                    if (resultCode == RESULT_CANCELED) {
-                        finish()
-                    } else if (resultCode == RESULT_IN_APP_UPDATE_FAILED) {
-                        Toast.makeText(application, getString(R.string.update_error), Toast.LENGTH_SHORT).show()
+                    val curDevice = viewModel.curDevice
+                    if (curDevice != null) {
+                        curDevice.deviceName = name
+                        curDevice.url = urlAddress
+                        curDevice.password = password
+                        viewModel.insert(curDevice)
                     }
+                }
 
-                }
+            } else {
+                refreshData()
             }
-            REQUEST_FLEXIBLE_UPDATE -> {
-                if (resultCode == RESULT_IN_APP_UPDATE_FAILED) {
-                    Toast.makeText(application, getString(R.string.update_error), Toast.LENGTH_SHORT).show()
+        } else if (requestCode == REQUEST_CODE_UPDATE) {
+            if (resultCode != RESULT_OK) {
+                if (resultCode == RESULT_CANCELED) {
+                    finish()
+                } else if (resultCode == RESULT_IN_APP_UPDATE_FAILED) {
+                    Toast.makeText(application, "Не удалось обновить приложение, попробуйте позднее", Toast.LENGTH_SHORT).show()
                 }
+
             }
         }
     }
@@ -302,8 +282,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     companion object {
-        private const val TAG = "MainActivity"
-
+        private const val REQUEST_CODE_UPDATE = 1001
         const val SETTINGS = 1
         const val PORT_NUMBER = 6
 
