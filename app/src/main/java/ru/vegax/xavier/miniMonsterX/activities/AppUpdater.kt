@@ -37,7 +37,6 @@ class AppUpdater(private val activity: Activity, private val updateListener: Upd
         when (status) {
 
             UNKNOWN -> Log.d(TAG, "stateUpdate: Unknown")
-            REQUIRES_UI_INTENT -> Log.d(TAG, "stateUpdate: Requires ui intent")
             PENDING -> Log.d(TAG, "stateUpdate: Pending")
             DOWNLOADING -> {
                 Log.d(TAG, "stateUpdate: Downloading")
@@ -58,7 +57,7 @@ class AppUpdater(private val activity: Activity, private val updateListener: Upd
         updateManager.appUpdateInfo
                 .addOnSuccessListener {
 
-                    Log.d(TAG, "updateIfRequired: ppdateAvailable = ${it.updateAvailability()} available code = ${it.availableVersionCode()}")
+                    Log.d(TAG, "updateIfRequired: updateAvailable = ${it.updateAvailability()} available code = ${it.availableVersionCode()}")
                     if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
 
                         val versionCode = it.availableVersionCode()

@@ -5,9 +5,8 @@ fun main() {
     val s = readLine()
 
     var result = 0
-    for (i in 0 until s!!.length) {
-        val ch = s[i]
-        if (j!!.indexOf(ch) >= 0) {
+    for (element in s!!) {
+        if (j!!.indexOf(element) >= 0) {
             ++result
         }
     }

@@ -4,6 +4,7 @@ package ru.vegax.xavier.miniMonsterX.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -57,11 +58,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close) {
 
-            override fun onDrawerOpened(drawerView: View) {
-//                val txtVTitle = findViewById<TextView>(R.id.txtVCurrentDevice)
-
-
-            }
+            override fun onDrawerOpened(drawerView: View) {}
         }
 
         drawer.addDrawerListener(toggle)
@@ -81,13 +78,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             fragmentTransaction.add(R.id.ioFragment, fragment).addToBackStack(null).commit()
         }
         observeViewModel()
-        mUpdateManager = AppUpdateManagerFactory.create(this) // in app update
+        mUpdateManager = AppUpdateManagerFactory.create(this)
         updateIfRequired()
     }
 
     override fun onResume() {
         super.onResume()
-//        Toast.makeText(application, "OnResume", Toast.LENGTH_SHORT).show()
         checkUpdating()
 
     }
@@ -156,7 +152,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
 
         when (item.itemId) {
-            R.id.nav_device // choose a device from list of saved devices
+            R.id.nav_device
             -> {
                 if (!mDeviceList.isNullOrEmpty()) {
                     val deviceSelect = DeviceSelectFragment()
@@ -169,7 +165,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 return true
             }
             R.id.nav_addDevice -> {
-                // Handle the camera import action (for now display a toast).
                 mIOFragment?.stopUpdating()
 
                 val intent = newSettingsIntent(this, 0, "",
@@ -187,7 +182,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun updateIfRequired() {
         mUpdateManager.appUpdateInfo
                 .addOnSuccessListener {
-                    Toast.makeText(application, "onCreate UpdateAvailable = ${it.updateAvailability()} available code = ${it.availableVersionCode()}", Toast.LENGTH_LONG).show()
                     if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
                             it.isUpdateTypeAllowed(IMMEDIATE)) {
                         mUpdateManager.startUpdateFlowForResult(
@@ -202,14 +196,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun checkUpdating() {
         mUpdateManager.appUpdateInfo
                 .addOnSuccessListener {
-                    //                    Toast.makeText(application, "UpdateAvailable = ${it.updateAvailability()} available code = ${it.availableVersionCode()}", Toast.LENGTH_LONG).show()
+                    Log.d(TAG, "UpdateAvailable = ${it.updateAvailability()} available code = ${it.availableVersionCode()}")
                     if (it.updateAvailability() ==
                             UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-//                        mUpdateManager.startUpdateFlowForResult(
-//                                it,
-//                                IMMEDIATE,
-//                                this,
-//                                REQUEST_CODE_UPDATE)
                         finish()
                     }
                 }
@@ -283,6 +272,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     companion object {
+        private const val TAG = "MainActivity"
         private const val REQUEST_CODE_UPDATE = 1001
         const val SETTINGS = 1
         const val PORT_NUMBER = 6
