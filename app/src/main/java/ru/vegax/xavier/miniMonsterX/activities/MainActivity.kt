@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onResume() {
         super.onResume()
-        Toast.makeText(application, "OnResume", Toast.LENGTH_SHORT).show()
+//        Toast.makeText(application, "OnResume", Toast.LENGTH_SHORT).show()
         checkUpdating()
 
     }
@@ -202,7 +202,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun checkUpdating() {
         mUpdateManager.appUpdateInfo
                 .addOnSuccessListener {
-                    Toast.makeText(application, "UpdateAvailable = ${it.updateAvailability()} available code = ${it.availableVersionCode()}", Toast.LENGTH_LONG).show()
+                    //                    Toast.makeText(application, "UpdateAvailable = ${it.updateAvailability()} available code = ${it.availableVersionCode()}", Toast.LENGTH_LONG).show()
                     if (it.updateAvailability() ==
                             UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
 //                        mUpdateManager.startUpdateFlowForResult(
@@ -217,6 +217,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == SETTINGS) {
             if (resultCode == Activity.RESULT_OK) {
                 val forCreation = data?.getBooleanExtra(EXTRA_FOR_CREATION, false) ?: false
@@ -244,7 +245,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (resultCode == RESULT_CANCELED) {
                     finish()
                 } else if (resultCode == RESULT_IN_APP_UPDATE_FAILED) {
-                    Toast.makeText(application, "Не удалось обновить приложение, попробуйте позднее", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(application, getString(R.string.could_not_update), Toast.LENGTH_SHORT).show()
                 }
 
             }

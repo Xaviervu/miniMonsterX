@@ -9,8 +9,8 @@ android {
         applicationId "ru.vegax.xavier.miniMonsterX"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 13
-        versionName "2.13"
+        versionCode 16
+        versionName "2.16"
         multiDexEnabled true
     }
     buildTypes {
