@@ -11,7 +11,7 @@ android {
         targetSdkVersion 29
         versionCode 13
         versionName "2.13"
-
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -26,8 +26,46 @@ android {
 }
 
 dependencies {
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
+    implementation "androidx.appcompat:appcompat:1.1.0"
+
+
+    //firebase
+    implementation 'com.google.firebase:firebase-core:17.2.1'
+    //crashlytics
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
+
+    //retrofit
+
+    implementation "com.squareup.retrofit2:retrofit:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:converter-gson:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${versions.retrofit}"
+    implementation 'com.squareup.okhttp3:okhttp:3.14.2'
+    /***  RxJava2  ***/
+    implementation "io.reactivex.rxjava2:rxkotlin:2.4.0"
+    implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
+    //coroutines
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
+
+    //lifecycle components
+    implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-runtime:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}"
+    //room
+    implementation "androidx.room:room-runtime:${versions.room}"
+    androidTestImplementation "androidx.room:room-testing:${versions.room}"
+    kapt "androidx.room:room-compiler:${versions.room}"
+
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+
+    //android.play:core for in app update
+    implementation 'com.google.android.play:core:1.6.4'
+
+
+    //tests
     testImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation"androidx.test:runner:1.2.0"
     androidTestImplementation"androidx.test:rules:1.2.0"
@@ -36,40 +74,5 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:3.2.0"
     androidTestImplementation "androidx.test.espresso:espresso-intents:3.2.0"
-
-    //firebase
-    implementation 'com.google.firebase:firebase-core:17.0.1'
-    //crashlytics
-    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
-
-    //retrofit
-
-    implementation 'com.squareup.retrofit2:retrofit:2.6.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.6.0'
-    implementation 'com.squareup.okhttp3:okhttp:3.14.2'
-    implementation "com.squareup.retrofit2:adapter-rxjava2:2.6.0"
-    /***  RxJava2  ***/
-    implementation "io.reactivex.rxjava2:rxkotlin:2.3.0"
-    implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
-
-//lifecycle components
-    implementation "androidx.lifecycle:lifecycle-runtime:$rootProject.lifecycleVersion"
-    implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifecycleVersion"
-
-
-    //room
-    implementation "androidx.room:room-runtime:$rootProject.roomVersion"
-    androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
-
-
-    kapt "androidx.room:room-compiler:$rootProject.roomVersion"
-    kapt "androidx.lifecycle:lifecycle-compiler:$rootProject.lifecycleVersion"
-
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.android.material:material:1.0.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-
-    //android.play:core for in app update
-    implementation 'com.google.android.play:core:1.6.1'
 }
 apply plugin: 'com.google.gms.google-services'

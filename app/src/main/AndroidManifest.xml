@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="ru.vegax.xavier.miniMonsterX">
 
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -15,6 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning"
+        android:banner="@drawable/banner"
         tools:targetApi="m">
         <activity
             android:name="ru.vegax.xavier.miniMonsterX.activities.MainActivity"
@@ -23,6 +31,10 @@
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
             </intent-filter>
         </activity>
 

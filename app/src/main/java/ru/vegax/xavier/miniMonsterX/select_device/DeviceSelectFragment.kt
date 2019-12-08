@@ -23,7 +23,7 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        val window = dialog.window ?: return
+        val window = dialog?.window ?: return
         val params = window.attributes
         params.width = resources.getDimensionPixelSize(R.dimen.popup_width)
         window.attributes = params
@@ -36,13 +36,9 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
         val view = inflater?.inflate(R.layout.fragment_select_device, parent, false)
         builder.setView(view)
 
-        //Initialize the RecyclerView
         val recVListOfDevices: RecyclerView? = view?.findViewById(R.id.recVListOfDevices)
 
-        //Set the Layout Manager
         recVListOfDevices?.layoutManager = LinearLayoutManager(view?.context)
-
-        //Initialize the ArrayLIst that will contain the data
 
         val currDevice = viewModel.curDevice
         val deviceList = viewModel.allDevices.value
@@ -50,12 +46,11 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
             val adapter = object : DeviceSelectAdapter(view.context, deviceList, currDevice) {
                 override fun onClick(v: View) {
                     if (v is Button) {
-                        // delete item
                         onDeleteItem(v.tag as Long)
                     } else {
                         onButtonPressed(v.tag as Long)
                     }
-                    dialog.dismiss()
+                    dialog?.dismiss()
                 }
             }
 
@@ -70,7 +65,6 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
     }
 
     fun onDeleteItem(deviceId: Long) {
-        // create a confirmation dialog
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.delete_device))
         builder.setMessage(getString(R.string.sure_delete_device))
@@ -86,12 +80,12 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
         dialog.show()
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
             mListener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 
@@ -102,5 +96,4 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
         fun onDeleteItem(deviceId: Long)
     }
 
-    companion object
-}// Required empty public constructor
+}
