@@ -40,6 +40,7 @@
 
         <activity
             android:name="ru.vegax.xavier.miniMonsterX.activities.SettingsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName="ru.vegax.xavier.miniMonsterX.activities.MainActivity" />
     </application>
 

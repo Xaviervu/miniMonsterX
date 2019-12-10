@@ -32,6 +32,11 @@ class SettingsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(layout.activity_settings)
         // Set up the login form.
+        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(id.settingsToolbar)
+
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         mTxtVurl = findViewById(id.url)
         mTxtVdeviceName = findViewById(id.deviceName)
         mTxtVpassword = findViewById(id.password)
@@ -63,6 +68,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val btnOk = findViewById<Button>(id.btn_ok)
         btnOk.setOnClickListener { setLoginData() }
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
