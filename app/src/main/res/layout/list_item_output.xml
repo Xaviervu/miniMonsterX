@@ -9,6 +9,8 @@
 
     <ImageView
         android:id="@+id/imageViewOutputs"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
@@ -19,10 +21,13 @@
         app:layout_constraintBottom_toBottomOf="@+id/switch1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/switch1"
-        app:srcCompat="@drawable/output" />
+        app:srcCompat="@drawable/output"
+        tools:ignore="UnusedAttribute" />
 
     <Switch
         android:id="@+id/switch1"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -39,7 +44,8 @@
         android:textSize="@dimen/input_output_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageViewOutputs"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UnusedAttribute" />
 
     <View
         android:id="@+id/divider"

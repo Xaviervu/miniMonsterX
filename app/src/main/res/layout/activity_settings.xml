@@ -63,6 +63,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/login_height"
                 android:hint="@string/password"
+                android:importantForAutofill="no"
                 android:inputType="textPassword" />
 
             <Button

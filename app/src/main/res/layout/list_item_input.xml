@@ -9,6 +9,7 @@
 
     <ImageView
         android:id="@+id/imageView2"
+        android:foreground="?attr/selectableItemBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -18,10 +19,13 @@
         app:layout_constraintBottom_toBottomOf="@+id/checkedTextView1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/checkedTextView1"
-        app:srcCompat="@drawable/input" />
+        app:srcCompat="@drawable/input"
+        tools:ignore="UnusedAttribute" />
 
     <CheckedTextView
         android:id="@+id/checkedTextView1"
+        android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -39,7 +43,8 @@
         android:textSize="@dimen/input_output_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView2"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="UnusedAttribute" />
 
     <View
         android:id="@+id/divider3"
