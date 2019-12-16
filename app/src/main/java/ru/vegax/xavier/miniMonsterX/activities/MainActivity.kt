@@ -1,44 +1,42 @@
 package ru.vegax.xavier.miniMonsterX.activities
-
-
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
+import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.google.android.material.internal.NavigationMenuView
 import com.google.android.material.navigation.NavigationView
-import com.google.android.play.core.appupdate.AppUpdateManager
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED
-import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
-import com.google.android.play.core.install.model.UpdateAvailability
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_FOR_CREATION
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_NAME
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_PASS
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_URL
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.newSettingsIntent
+import ru.vegax.xavier.miniMonsterX.auxiliar.AppUpdater
+import ru.vegax.xavier.miniMonsterX.databinding.ActivityMainBinding
 import ru.vegax.xavier.miniMonsterX.iodata.IOFragment
 import ru.vegax.xavier.miniMonsterX.repository.DeviceData
 import ru.vegax.xavier.miniMonsterX.select_device.DeviceSelectFragment
 
-
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, DeviceSelectFragment.OnFragmentInteractionListener {
 
-    private lateinit var mUpdateManager: AppUpdateManager
+    private lateinit var viewBinding: ActivityMainBinding
+
+    private lateinit var appUpdater: AppUpdater
     private var mDeviceList: List<DeviceData>? = null
     private lateinit var mTxtVCurrDevice: TextView
     private var mIOFragment: IOFragment? = null
@@ -47,16 +45,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
-
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
+        appUpdater = AppUpdater(this)
+        viewBinding = DataBindingUtil.setContentView(
+                this,
+                R.layout.activity_main)
+        setContentView(viewBinding.root)
+
+        with(viewBinding.mainIOLayout.vToolbar.updateView) {
+            setUpdateLayout(updateLayout, btnUpdate, imgVCloseUpdate)
+        }
+        appUpdater.snackContainer = viewBinding.mainIOLayout.mainIOLayout
+        val toolbar = viewBinding.mainIOLayout.vToolbar.toolbar
         setSupportActionBar(toolbar)
 
 
-        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
-        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+        val drawer = viewBinding.drawerLayout
+        val navigationView = viewBinding.navView
         val toggle = object : ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close) {
@@ -85,17 +90,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             fragmentTransaction.add(R.id.ioFragment, fragment).addToBackStack(null).commit()
         }
         observeViewModel()
-        mUpdateManager = AppUpdateManagerFactory.create(this)
-        updateIfRequired()
     }
 
     override fun onResume() {
         super.onResume()
-        checkUpdating()
+        appUpdater.checkUpdating()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        appUpdater.unRegisterListener()
+    }
+
+    fun updateClick(button: View) {
+        appUpdater.updateClick()
 
     }
 
-
+    fun closeUpdateClick(close: View) {
+        appUpdater.closeUpdateClick()
+    }
 
     private fun observeViewModel() {
         viewModel.currentDeviceLiveData.observe(this, Observer { curDevice ->
@@ -110,6 +124,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         })
     }
 
+    private fun setUpdateLayout(updateLayout: View, btnUpdate: Button, imgVCloseUpdate: ImageView) {
+        appUpdater.setUpdateLayout(updateLayout, btnUpdate, imgVCloseUpdate)
+
+    }
 
     override fun onBackPressed() {
         val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
@@ -184,31 +202,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             else -> return false
         }
-    }
-
-    private fun updateIfRequired() {
-        mUpdateManager.appUpdateInfo
-                .addOnSuccessListener {
-                    if (it.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                            it.isUpdateTypeAllowed(IMMEDIATE)) {
-                        mUpdateManager.startUpdateFlowForResult(
-                                it,
-                                IMMEDIATE,
-                                this,
-                                REQUEST_CODE_UPDATE)
-
-                    }
-                }
-    }
-    private fun checkUpdating() {
-        mUpdateManager.appUpdateInfo
-                .addOnSuccessListener {
-                    Log.d(TAG, "UpdateAvailable = ${it.updateAvailability()} available code = ${it.availableVersionCode()}")
-                    if (it.updateAvailability() ==
-                            UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
-                        finish()
-                    }
-                }
     }
 
 

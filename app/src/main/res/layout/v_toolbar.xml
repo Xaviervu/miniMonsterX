@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:id="@+id/toolbar_with_progress_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
+        android:background="?colorPrimary"
+        android:elevation="4dp"
+        android:orientation="vertical"
+        tools:ignore="UnusedAttribute">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?colorPrimary"
+            android:contentInsetStart="0dp"
+            android:minHeight="?attr/actionBarSize"
+            android:touchscreenBlocksFocus="false" />
+
+        <include
+            android:id="@+id/updateView"
+            layout="@layout/l_update_app" />
+    </LinearLayout>
+</layout>
