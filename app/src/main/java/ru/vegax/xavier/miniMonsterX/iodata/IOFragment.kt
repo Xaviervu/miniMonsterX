@@ -7,15 +7,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import ru.vegax.xavier.miniMonsterX.BuildConfig
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.activities.IODataViewModel
 import ru.vegax.xavier.miniMonsterX.activities.MainActivity.Companion.PREFF_DEV_ID
+import ru.vegax.xavier.miniMonsterX.databinding.IoDataFragmentBinding
 import ru.vegax.xavier.miniMonsterX.repository.LoadingStatus
 import java.util.*
 
@@ -33,45 +36,47 @@ class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var swipeContainer: SwipeRefreshLayout
 
     private var resetDataSet: Boolean = true
-
+    private lateinit var viewBinding: IoDataFragmentBinding
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.io_data_fragment, container, false)
+        viewBinding = DataBindingUtil.inflate(inflater, R.layout.io_data_fragment, container, false)
 
-        swipeContainer = v.findViewById(R.id.swipe_container)
+        swipeContainer = viewBinding.swipeContainer
         swipeContainer.setOnRefreshListener(this)
 
-        mRecyclerView = v.findViewById(R.id.recyclerView)
+        mRecyclerView = viewBinding.recyclerView
 
-        mRecyclerView.layoutManager = LinearLayoutManager(v.context)
+        mRecyclerView.layoutManager = LinearLayoutManager(context)
 
         mIoData = ArrayList()
 
+        context?.let {
+            mAdapter = object : IOAdapter(it, mIoData) {
+                override fun onLongClick(v: View?): Boolean {
 
-        mAdapter = object : IOAdapter(v.context, mIoData) {
-            override fun onLongClick(v: View?): Boolean {
-
-                if (v != null) {
-                    showNameDialog(v.tag as Int)
+                    if (v != null) {
+                        showNameDialog(v.tag as Int)
+                    }
+                    return true
                 }
-                return true
+
+                override fun onClick(v: View) {
+                    if (v is Switch) {
+                        setOutput(v)
+
+                    } else if (v is ImageView) {
+                        impulseOutput(v)
+                    }
+                }
+
             }
 
-            override fun onClick(v: View) {
-                if (v is Switch) {
-                    setOutput(v)
-
-                } else if (v is ImageView) {
-                    impulseOutput(v)
-                }
-            }
-
+            mRecyclerView.adapter = mAdapter
         }
+        viewBinding.txtVVersion.text = getString(R.string.version, BuildConfig.VERSION_NAME)
 
-        mRecyclerView.adapter = mAdapter
 
-
-        return v
+        return viewBinding.root
     }
 
     private fun showNameDialog(curPos: Int) {

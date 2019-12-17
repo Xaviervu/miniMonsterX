@@ -31,7 +31,7 @@
     <string name="navigation_drawer_close">Cerrar el panel</string>
     <string name="navigation_drawer_open">Abrir el panel</string>
     <string name="no">NO</string>
-    <string name="no_conn">Sin conección</string>
+    <string name="no_conn">Sin conexión</string>
     <string name="no_devices">No hay dispositivos creados</string>
     <string name="ok">OK</string>
     <string name="output_icon">Icono de salida</string>
@@ -68,4 +68,5 @@
     <string name="update_ready">Instalar actualización</string>
     <string name="restart">Instalar</string>
     <string name="could_not_update">No se pudo actualizar la aplicación, trate más tarde</string>
+    <string name="version">Versión %1$s</string>
 </resources>

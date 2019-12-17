@@ -14,7 +14,7 @@ import ru.vegax.xavier.miniMonsterX.R
 import java.util.*
 
 abstract class IOAdapter
-internal constructor(private val mContext: Context, //Member variables
+internal constructor(private val context: Context, //Member variables
                      private val mItemsData: ArrayList<IOItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnClickListener, View.OnLongClickListener {
 
     override fun getItemCount(): Int {
@@ -35,8 +35,8 @@ internal constructor(private val mContext: Context, //Member variables
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            OUTPUT_ELEMENT -> ViewHolderOutputs(LayoutInflater.from(mContext).inflate(R.layout.list_item_output, parent, false))
-            else -> ViewHolderInputs(LayoutInflater.from(mContext).inflate(R.layout.list_item_input, parent, false))
+            OUTPUT_ELEMENT -> ViewHolderOutputs(LayoutInflater.from(context).inflate(R.layout.list_item_output, parent, false))
+            else -> ViewHolderInputs(LayoutInflater.from(context).inflate(R.layout.list_item_input, parent, false))
         }
 
     }

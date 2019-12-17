@@ -73,5 +73,6 @@
     <string name="update_ready">An update has just been downloaded</string>
     <string name="restart">Restart</string>
     <string name="could_not_update">Couldn\'t update, try later</string>
+    <string name="version">version %1$s</string>
 
 </resources>
