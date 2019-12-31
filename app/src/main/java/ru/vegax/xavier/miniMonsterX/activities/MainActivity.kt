@@ -1,6 +1,9 @@
 package ru.vegax.xavier.miniMonsterX.activities
+
 import android.app.Activity
+import android.app.UiModeManager
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -12,6 +15,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
@@ -46,6 +51,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (isAndroidTV()) {
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
+        }
         appUpdater = AppUpdater(this)
         viewBinding = DataBindingUtil.setContentView(
                 this,
@@ -122,6 +130,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 mDeviceList = it
             }
         })
+    }
+
+    private fun isAndroidTV(): Boolean {
+        val uiModeManager = getSystemService(UI_MODE_SERVICE) as? UiModeManager
+        return (uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION)
     }
 
     private fun setUpdateLayout(updateLayout: View, btnUpdate: Button, imgVCloseUpdate: ImageView) {

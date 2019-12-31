@@ -1,8 +1,10 @@
 package ru.vegax.xavier.miniMonsterX.activities
 
 import android.app.Activity
+import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.MenuItem
@@ -15,6 +17,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.lifecycle.ViewModelProviders
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.R.*
@@ -32,6 +36,9 @@ class SettingsActivity : AppCompatActivity(), OnFocusChangeListener {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (isAndroidTV()) {
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
+        }
         setContentView(layout.activity_settings)
         // Set up the login form.
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(id.settingsToolbar)
@@ -88,6 +95,10 @@ class SettingsActivity : AppCompatActivity(), OnFocusChangeListener {
 //        return super.onOptionsItemSelected(item)
     }
 
+    private fun isAndroidTV(): Boolean {
+        val uiModeManager = getSystemService(UI_MODE_SERVICE) as? UiModeManager
+        return (uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION)
+    }
 
 
     private fun setLoginData() {
