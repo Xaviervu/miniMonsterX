@@ -1,5 +1,6 @@
 package ru.vegax.xavier.miniMonsterX.iodata
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
@@ -214,6 +215,24 @@ class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
     //handle long click from item
 
     fun impulseOutput(view: View) {
+        onChangeOutputMode(view)
+    }
+
+    private fun onChangeOutputMode(view: View) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.change_output))
+        builder.setMessage(getString(R.string.sure_change_output_type))
+        builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
+            toggleOutputType(view)
+
+        }
+        builder.setNegativeButton(getString(R.string.no)) { _, _ ->
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    private fun toggleOutputType(view: View) {
         val curDevice = viewModel.curDevice
         if (curDevice != null) {
             val curPos = view.tag as Int
@@ -225,7 +244,6 @@ class IOFragment : Fragment(), SwipeRefreshLayout.OnRefreshListener {
             currentItem.isChanging = false
         }
     }
-
     fun stopUpdating() {
         viewModel.stopLoading()
     }

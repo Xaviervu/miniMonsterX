@@ -20,6 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/checkedTextView1"
         app:srcCompat="@drawable/input"
+        android:padding="6dp"
         tools:ignore="UnusedAttribute" />
 
     <CheckedTextView

@@ -46,7 +46,7 @@
     <string name="set_output">Salida</string>
     <string name="set_port_name">Introducir el nombre del puerto</string>
     <string name="share">Compartir</string>
-    <string name="sure_delete_device">"Está seguro de que quiere borrar el dispositivo? Las configuraciones y contraseñas seran borradas también "</string>
+    <string name="sure_delete_device">"¿Está seguro de que quiere borrar el dispositivo? Las configuraciones y contraseñas seran borradas también "</string>
     <string name="tab_label1">Entradas/Salidas</string>
     <string name="tab_label2">Ejecutar un impulso</string>
     <string name="tab_main">Configuracion</string>
@@ -69,4 +69,6 @@
     <string name="restart">Instalar</string>
     <string name="could_not_update">No se pudo actualizar la aplicación, trate más tarde</string>
     <string name="version">Versión %1$s</string>
+    <string name="change_output">Cambiar el tipo de salida</string>
+    <string name="sure_change_output_type">¿Está seguro de que quiere cambiar el tipo de salida? (tipo directo, tipo impulso)</string>
 </resources>

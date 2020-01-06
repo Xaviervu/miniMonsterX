@@ -5,12 +5,8 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Flowable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.*
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.auxiliar.ioThread
 import ru.vegax.xavier.miniMonsterX.iodata.IOItem
@@ -19,7 +15,6 @@ import ru.vegax.xavier.miniMonsterX.repository.DeviceData
 import ru.vegax.xavier.miniMonsterX.repository.DevicesDb
 import ru.vegax.xavier.miniMonsterX.repository.LoadingStatus
 import ru.vegax.xavier.miniMonsterX.retrofit2.ApiServiceFactory
-import java.util.concurrent.TimeUnit
 
 
 internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
@@ -39,7 +34,6 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
 
     val allDevices = dao.allDevices()
 
-    private var loadCyclically = false
     fun clearAndInsert(devices: List<DeviceData>) = ioThread {
         dao.deleteAll()
         dao.insert(devices)
@@ -65,48 +59,41 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
     fun getDevice(deviceID: Long) = ioThread {
         curDevice = dao.currDevice(deviceID)
         mCurrDeviceLiveData.postValue(curDevice)
-        cyclicRequest.dispose()
+        cyclicRequest?.cancel()
         getDataCyclically()
     }
     //REST functions and values
 
-    private var cyclicRequest: Disposable = CompositeDisposable()
-    private var outRequest: Disposable? = null
-    private var impulseRequest: Disposable? = null
+    private var cyclicRequest: Job? = null
+    private var outRequest: Job? = null
+    private var impulseRequest: Job? = null
 
     private val apiService by lazy {
         ApiServiceFactory.createService()
     }
 
     fun getDataCyclically() {
-        loadCyclically = true
         val curDev = curDevice
         if (curDev != null) {
             val url = "${curDev.url}${curDev.password}/?js="
             mLoadingStatus.postValue(LoadingStatus.LOADING)
-            cyclicRequest =
-                    Flowable.interval(0L, REFRESH_TIME, TimeUnit.MILLISECONDS)
-                            .subscribeOn(Schedulers.io())
-                            .onBackpressureLatest()
-                            .flatMap {
-                                apiService.getControlData(url).toFlowable()
-                            }
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(
-                                    {
-
-                                        mIOData.postValue(getIOData(it))
-                                        mLoadingStatus.postValue(LoadingStatus.NOT_LOADING)
-                                        if (!loadCyclically) {
-                                            cyclicRequest.dispose()
-                                        }
-                                    },
-                                    {
-                                        cyclicRequest.dispose()
-                                        Log.d(TAG, it.message
-                                                ?: app.getString(R.string.loading_data_error))
-                                        mLoadingStatus.postValue(LoadingStatus.ERROR)
-                                    })
+            cyclicRequest = viewModelScope.launch {
+                withContext(Dispatchers.IO) {
+                    while (cyclicRequest?.isCancelled == false) {
+                        try {
+                            val ioData = apiService.getControlData(url)
+                            mIOData.postValue(getIOData(ioData))
+                            delay(REFRESH_TIME)
+                        } catch (e: Throwable) {
+                            mLoadingStatus.postValue(LoadingStatus.ERROR)
+                            cyclicRequest?.cancel()
+                            Log.e(TAG, app.getString(R.string.loading_data_error), e)
+                        } finally {
+                            mLoadingStatus.postValue(LoadingStatus.NOT_LOADING)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -115,15 +102,14 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
         val curDev = curDevice
         if (curDev != null) {
             val url = "${curDev.url}${curDev.password}/?sw=$outputN-" + if (on) "1" else "0" //?sw={output}-{on} outputNumber 1..6; on = "1" off = "0"
-            outRequest = apiService.setOutput(url).subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy(
-                            onError = {
-                                Log.d(TAG, it.message
-                                        ?: app.getString(R.string.setting_output_error))
-                                mLoadingStatus.postValue(LoadingStatus.ERROR)
-                            }
-                    )
+            outRequest = viewModelScope.launch {
+                try {
+                    apiService.setOutput(url)
+                } catch (e: Throwable) {
+                    Log.e(TAG, app.getString(R.string.setting_output_error), e)
+                    mLoadingStatus.postValue(LoadingStatus.ERROR)
+                }
+            }
         }
     }
 
@@ -131,22 +117,21 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
         val curDev = curDevice
         if (curDev != null) {
             val url = "${curDev.url}${curDev.password}/?rst=$outputN" //"?rst={output}" outputNumber 1..6
-            impulseRequest = apiService.setImpulse(url).subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy(
-                            onError = {
-                                Log.d(TAG, it.message
-                                        ?: app.getString(R.string.impulse_setting_error))
-                                mLoadingStatus.postValue(LoadingStatus.ERROR)
-                            }
-                    )
+            impulseRequest = viewModelScope.launch {
+                try {
+                    apiService.setImpulse(url)
+                } catch (e: Throwable) {
+                    Log.e(TAG, app.getString(R.string.impulse_setting_error), e)
+                    mLoadingStatus.postValue(LoadingStatus.ERROR)
+                }
+            }
         }
     }
 
     fun stopLoading() {
-        loadCyclically = false
-        outRequest?.dispose()
-        impulseRequest?.dispose()
+        cyclicRequest?.cancel()
+        outRequest?.cancel()
+        impulseRequest?.cancel()
 
     }
 

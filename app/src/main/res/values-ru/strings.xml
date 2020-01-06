@@ -69,4 +69,6 @@
     <string name="restart">Запустить</string>
     <string name="could_not_update">Не удалось обновить приложение, попробуйте позднее</string>
     <string name="version">версия %1$s</string>
+    <string name="change_output">Изменить тип выхода</string>
+    <string name="sure_change_output_type">Вы уверены хотите менять тип выхода? (Прямой, импульсный)</string>
 </resources>
