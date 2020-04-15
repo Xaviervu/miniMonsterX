@@ -3,11 +3,12 @@
 buildscript {
     ext {
         versions = [
-                kotlin : '1.3.61',
-                room : '2.2.3',
-                lifecycle : '2.1.0',
-                retrofit : '2.6.2',
-                coroutines : '1.3.2'
+                kotlin                     : '1.3.71',
+                room                       : '2.2.5',
+                lifecycle                  : '2.2.0',
+                retrofit                   : '2.8.1',
+                coroutines                 : '1.3.2',
+                androidx_swiperefreshlayout: '1.0.0'
         ]
 
     }
@@ -19,7 +20,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.3'
+        classpath 'com.android.tools.build:gradle:3.6.2'
 
 
         // NOTE: Do not place your application dependencies here; they belong

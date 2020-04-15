@@ -2,7 +2,7 @@ package ru.vegax.xavier.miniMonsterX.retrofit2
 
 import okhttp3.Interceptor
 import okhttp3.Response
-import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 
 
 class JsonInterceptor : Interceptor {
@@ -10,12 +10,12 @@ class JsonInterceptor : Interceptor {
         val request = chain.request()
 
         val response = chain.proceed(request)
-        var rawJson = response.body()?.string() ?: ""
+        var rawJson = response.body?.string() ?: ""
         if (rawJson.startsWith("{") && !rawJson.endsWith("}")) {
             rawJson += "}"
         }
         return response.newBuilder()
-                .body(ResponseBody.create(response.body()?.contentType(), rawJson)).build()
+                .body(rawJson.toResponseBody(response.body?.contentType())).build()
     }
 
 }
