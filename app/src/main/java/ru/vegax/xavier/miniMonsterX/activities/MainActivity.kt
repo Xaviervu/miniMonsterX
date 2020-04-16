@@ -33,7 +33,7 @@ import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.newSettingsIntent
 import ru.vegax.xavier.miniMonsterX.auxiliar.AppUpdater
 import ru.vegax.xavier.miniMonsterX.databinding.ActivityMainBinding
-import ru.vegax.xavier.miniMonsterX.iodata.IOFragment
+import ru.vegax.xavier.miniMonsterX.fragments.iodata.IOFragment
 import ru.vegax.xavier.miniMonsterX.repository.DeviceData
 import ru.vegax.xavier.miniMonsterX.select_device.DeviceSelectFragment
 
@@ -91,11 +91,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         navigationView.setNavigationItemSelectedListener(this)
         if (savedInstanceState == null) {
-            val fragment = IOFragment()
+            val fragment = IOFragment.newInstance()
             mIOFragment = fragment
-            val fragmentManager = supportFragmentManager
-            val fragmentTransaction = fragmentManager.beginTransaction()
-            fragmentTransaction.add(R.id.ioFragment, fragment).addToBackStack(null).commit()
+
+            supportFragmentManager.beginTransaction()
+                    .add(R.id.ioFragment, fragment, fragment.fragmentTag)
+                    .addToBackStack(null).commit()
+        } else {
+            mIOFragment = supportFragmentManager.findFragmentByTag(IOFragment.TAG) as? IOFragment
         }
         observeViewModel()
     }

@@ -9,7 +9,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.auxiliar.ioThread
-import ru.vegax.xavier.miniMonsterX.iodata.IOItem
+import ru.vegax.xavier.miniMonsterX.fragments.iodata.IOItem
 import ru.vegax.xavier.miniMonsterX.models.ControlData
 import ru.vegax.xavier.miniMonsterX.repository.DeviceData
 import ru.vegax.xavier.miniMonsterX.repository.DevicesDb

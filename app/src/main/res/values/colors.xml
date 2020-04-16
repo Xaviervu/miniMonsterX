@@ -9,4 +9,5 @@
     <color name="LightBlue">#77adfe</color>
     <color name="LightBlue2">#4690fa</color>
     <color name="lightGrey">#37000000</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>
