@@ -7,7 +7,7 @@ import androidx.room.*
 interface DevicesDao {
 
     @Query("SELECT * from device_table ORDER BY deviceName ASC")
-    fun allDevices(): LiveData<List<DeviceData>>
+    fun allDevices(): LiveData<List<DeviceData>?>
 
     @Query("SELECT * from device_table WHERE deviceId = :deviceId LIMIT 1")
     fun currDevice(deviceId: Long): DeviceData

@@ -9,8 +9,8 @@ android {
         applicationId "ru.vegax.xavier.miniMonsterX"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 26 //divisible by 10 -> force update
-        versionName "2.26"
+        versionCode 27 //divisible by 10 -> force update
+        versionName "2.27"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
     }
@@ -24,6 +24,9 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8.toString()
+    }
     dataBinding {
         enabled = true
     }
@@ -32,8 +35,13 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlin}"
     implementation "androidx.appcompat:appcompat:1.1.0"
-
-
+    implementation "androidx.core:core-ktx:${versions.androidx_core}"
+    implementation "androidx.fragment:fragment-ktx:${versions.androidx_fragment}"
+    implementation "androidx.appcompat:appcompat:${versions.androidx_appcompat}"
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:${versions.androidx_swiperefreshlayout}"
     //firebase
     implementation 'com.google.firebase:firebase-core:17.3.0'
     //crashlytics
@@ -49,18 +57,17 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
 
     //lifecycle components
-    implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-runtime:${versions.lifecycle}"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.lifecycle}"
+    // for LifecycleScope
+    implementation "androidx.lifecycle:lifecycle-extensions:${versions.lifecycle}"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:${versions.lifecycle}"
     //room
     implementation "androidx.room:room-runtime:${versions.room}"
     androidTestImplementation "androidx.room:room-testing:${versions.room}"
     kapt "androidx.room:room-compiler:${versions.room}"
 
-    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:${versions.androidx_swiperefreshlayout}"
+
 
     //android.play:core for in app update
     implementation 'com.google.android.play:core:1.7.2'

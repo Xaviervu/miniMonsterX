@@ -29,11 +29,14 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
 
     var curDevice: DeviceData? = null
         private set
-    private val mCurrDeviceLiveData = MutableLiveData<DeviceData>()
-    val currentDeviceLiveData: LiveData<DeviceData> = mCurrDeviceLiveData
+    private val mCurrDeviceLiveData = MutableLiveData<DeviceData?>()
+    val currentDeviceLiveData: LiveData<DeviceData?> = mCurrDeviceLiveData
 
     val allDevices = dao.allDevices()
 
+    init {
+        Log.d(TAG, "init")
+    }
     fun clearAndInsert(devices: List<DeviceData>) = ioThread {
         dao.deleteAll()
         dao.insert(devices)
@@ -57,7 +60,9 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     fun getDevice(deviceID: Long) = ioThread {
+        Log.d(TAG, "getDevice: $deviceID")
         curDevice = dao.currDevice(deviceID)
+        Log.d(TAG, "getDevice: $curDevice, post Value!")
         mCurrDeviceLiveData.postValue(curDevice)
         cyclicRequest?.cancel()
         getDataCyclically()
@@ -73,6 +78,7 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     fun getDataCyclically() {
+        Log.d(TAG, "getDataCyclically")
         val curDev = curDevice
         if (curDev != null) {
             val url = "${curDev.url}${curDev.password}/?js="
@@ -82,9 +88,11 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
                     while (cyclicRequest?.isCancelled == false) {
                         try {
                             val ioData = apiService.getControlData(url)
+                            Log.d(TAG, "getDataCyclically: New data! $ioData")
                             mIOData.postValue(getIOData(ioData))
                             delay(REFRESH_TIME)
                         } catch (e: Throwable) {
+                            Log.e(TAG, "getDataCyclically:error ", e)
                             mLoadingStatus.postValue(LoadingStatus.ERROR)
                             cyclicRequest?.cancel()
                             Log.e(TAG, app.getString(R.string.loading_data_error), e)

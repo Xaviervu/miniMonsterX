@@ -5,6 +5,7 @@ import android.app.UiModeManager
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -20,8 +21,8 @@ import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import com.google.android.material.internal.NavigationMenuView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED
@@ -45,15 +46,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var mDeviceList: List<DeviceData>? = null
     private lateinit var mTxtVCurrDevice: TextView
     private var mIOFragment: IOFragment? = null
-    private val viewModel by lazy {
-        ViewModelProviders.of(this).get(IODataViewModel::class.java)
-    }
+    private lateinit var viewModel: IODataViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (isAndroidTV()) {
             AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
         }
+        viewModel = ViewModelProvider(this).get(IODataViewModel::class.java)
         appUpdater = AppUpdater(this)
         viewBinding = DataBindingUtil.setContentView(
                 this,
@@ -123,16 +123,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun observeViewModel() {
-        viewModel.currentDeviceLiveData.observe(this, Observer { curDevice ->
+        Log.d(TAG, "observeViewModel")
+        viewModel.currentDeviceLiveData.observe(this) { curDevice ->
+            Log.d(TAG, "observeViewModel curDevice: $curDevice")
             if (curDevice != null) {
                 mTxtVCurrDevice.text = curDevice.deviceName
             }
-        })
-        viewModel.allDevices.observe(this, Observer {
+        }
+        viewModel.allDevices.observe(this) {
+            Log.d(TAG, "observeViewModel: deviceList = $it")
             if (it != null) {
                 mDeviceList = it
             }
-        })
+        }
     }
 
     private fun isAndroidTV(): Boolean {

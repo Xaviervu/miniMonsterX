@@ -4,13 +4,14 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -40,13 +41,14 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         get() = TAG
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(IODataViewModel::class.java)
-
+        viewModel = ViewModelProvider(context as androidx.fragment.app.FragmentActivity).get(IODataViewModel::class.java)
     }
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
 
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+        Log.d(TAG, "onCreateView")
         viewBinding = DataBindingUtil.inflate(inflater, R.layout.io_data_fragment, container, false)
 
         swipeContainer = viewBinding.swipeContainer
@@ -87,6 +89,11 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         return viewBinding.root
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        Log.d(TAG, "onActivityCreated")
+        observeViewModel()
+    }
 
     private fun showNameDialog(curPos: Int) {
         val curContext = context
@@ -122,7 +129,7 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onResume() {
         super.onResume()
-        observeViewModel()
+
         getPrefs()
 
     }
@@ -142,9 +149,9 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun observeViewModel() {
-        viewModel.controlData.observe(this, Observer { item ->
-
-
+        Log.d(TAG, "observeViewModel")
+        viewModel.controlData.observe(viewLifecycleOwner) { item ->
+            Log.d(TAG, "observeViewModel: controlData $item")
             val difference = mIoData.mapIndexed { i, ioItem ->
                 ioItem.isOn.xor(item[i].isOn) || ioItem.isOutput.xor(item[i].isOutput)
             }
@@ -157,27 +164,27 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
                 resetDataSet = false
                 mAdapter.notifyDataSetChanged()
             }
-        })
-        viewModel.currentDeviceLiveData.observe(this, Observer { curDevice ->
+        }
+        viewModel.currentDeviceLiveData.observe(viewLifecycleOwner) { curDevice ->
+            Log.d(TAG, "observeViewModel: currentDeviceLiveData: $curDevice ")
             if (curDevice != null) {
                 resetDataSet = true
                 rememberPrefs(curDevice.deviceId)
             }
-        })
-        viewModel.loadingStatus.observe(this, Observer { loadingStatus ->
-            if (loadingStatus != null) {
-                when (loadingStatus) {
-                    LoadingStatus.LOADING -> swipeContainer.isRefreshing = true
-                    LoadingStatus.NOT_LOADING -> swipeContainer.isRefreshing = false
-                    LoadingStatus.ERROR -> {
-                        updateAdapter()
-                    }
+        }
+        viewModel.loadingStatus.observe(viewLifecycleOwner) { loadingStatus ->
+            Log.d(TAG, "observeViewModel: $loadingStatus")
+            when (loadingStatus) {
+                LoadingStatus.LOADING -> swipeContainer.isRefreshing = true
+                LoadingStatus.NOT_LOADING -> swipeContainer.isRefreshing = false
+                LoadingStatus.ERROR -> {
+                    errorLoading()
                 }
             }
-        })
+        }
     }
 
-    private fun updateAdapter() {
+    private fun errorLoading() {
         swipeContainer.isRefreshing = false
         mIoData.clear()
         mAdapter.notifyDataSetChanged()
@@ -199,7 +206,7 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
             viewModel.getDataCyclically()
         }
         if (viewModel.curDevice == null) {
-            updateAdapter()
+            errorLoading()
         }
     }
     //handle click from item
@@ -252,6 +259,7 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
             currentItem.isChanging = false
         }
     }
+
     fun stopUpdating() {
         viewModel.stopLoading()
     }
