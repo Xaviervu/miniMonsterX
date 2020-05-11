@@ -72,9 +72,8 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
     private var cyclicRequest: Job? = null
     private var outRequest: Job? = null
     private var impulseRequest: Job? = null
-
     private val apiService by lazy {
-        ApiServiceFactory.createService()
+        ApiServiceFactory.createService(true)
     }
 
     fun getDataCyclically() {
@@ -156,8 +155,14 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
                 inN++
                 "Input$inN"
             }
+            var temp: Double? = null
+            try {
+                temp = data.t[i].toDouble()
+            } catch (e: Throwable) {
+                //no temp sensor
+            }
             IOItem(curDevice?.portNames?.get(i)
-                    ?: name, isOutput, data.prt[i] == 1, curDevice?.impulseTypes?.get(i)
+                    ?: name, isOutput, data.prt[i] == 1, temp, curDevice?.impulseTypes?.get(i)
                     ?: false, false)
         }
     }

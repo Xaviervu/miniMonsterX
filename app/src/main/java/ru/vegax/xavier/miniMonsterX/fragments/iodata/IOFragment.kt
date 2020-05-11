@@ -17,10 +17,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.vegax.xavier.miniMonsterX.BuildConfig
 import ru.vegax.xavier.miniMonsterX.R
+import ru.vegax.xavier.miniMonsterX.activities.BaseActivity
 import ru.vegax.xavier.miniMonsterX.activities.IODataViewModel
+import ru.vegax.xavier.miniMonsterX.activities.MainActivity
 import ru.vegax.xavier.miniMonsterX.activities.MainActivity.Companion.PREFF_DEV_ID
 import ru.vegax.xavier.miniMonsterX.databinding.IoDataFragmentBinding
 import ru.vegax.xavier.miniMonsterX.fragments.BaseFragment
+import ru.vegax.xavier.miniMonsterX.fragments.thermo.FragmentThermo
 import ru.vegax.xavier.miniMonsterX.repository.LoadingStatus
 import java.util.*
 
@@ -35,11 +38,16 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     private lateinit var viewModel: IODataViewModel
     private lateinit var swipeContainer: SwipeRefreshLayout
 
+    private var baseActivity: BaseActivity? = null
     private var resetDataSet: Boolean = true
     private lateinit var viewBinding: IoDataFragmentBinding
     override val fragmentTag: String
         get() = TAG
 
+    override fun onAttach(context: Context) {
+        baseActivity = (activity as? BaseActivity)
+        super.onAttach(context)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
@@ -71,11 +79,10 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
                 }
 
                 override fun onClick(v: View) {
-                    if (v is Switch) {
-                        setOutput(v)
-
-                    } else if (v is ImageView) {
-                        impulseOutput(v)
+                    when (v) {
+                        is Switch -> setOutput(v)
+                        is ImageView -> impulseOutput(v)
+                        is TextView -> setThermostat(v)
                     }
                 }
 
@@ -88,6 +95,7 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
         return viewBinding.root
     }
+
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -151,9 +159,9 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     private fun observeViewModel() {
         Log.d(TAG, "observeViewModel")
         viewModel.controlData.observe(viewLifecycleOwner) { item ->
-            Log.d(TAG, "observeViewModel: controlData $item")
             val difference = mIoData.mapIndexed { i, ioItem ->
-                ioItem.isOn.xor(item[i].isOn) || ioItem.isOutput.xor(item[i].isOutput)
+                ioItem.isOn.xor(item[i].isOn) || ioItem.isOutput.xor(item[i].isOutput) ||
+                        ioItem.temperature != item[i].temperature
             }
             mIoData.clear()
             mIoData.addAll(item)
@@ -166,14 +174,12 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
             }
         }
         viewModel.currentDeviceLiveData.observe(viewLifecycleOwner) { curDevice ->
-            Log.d(TAG, "observeViewModel: currentDeviceLiveData: $curDevice ")
             if (curDevice != null) {
                 resetDataSet = true
                 rememberPrefs(curDevice.deviceId)
             }
         }
         viewModel.loadingStatus.observe(viewLifecycleOwner) { loadingStatus ->
-            Log.d(TAG, "observeViewModel: $loadingStatus")
             when (loadingStatus) {
                 LoadingStatus.LOADING -> swipeContainer.isRefreshing = true
                 LoadingStatus.NOT_LOADING -> swipeContainer.isRefreshing = false
@@ -231,6 +237,15 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     fun impulseOutput(view: View) {
         onChangeOutputMode(view)
+    }
+
+    private fun setThermostat(v: TextView) {
+        val url = "${viewModel.curDevice?.url}${viewModel.curDevice?.password}/"
+        if (viewModel.curDevice != null) {
+            val curPos = v.tag as Int
+            val thermostatFragment = FragmentThermo.newInstance(url, curPos)
+            (baseActivity as? MainActivity)?.addFragment(thermostatFragment)
+        }
     }
 
     private fun onChangeOutputMode(view: View) {

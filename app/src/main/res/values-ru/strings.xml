@@ -71,4 +71,13 @@
     <string name="version">версия %1$s</string>
     <string name="change_output">Изменить тип выхода</string>
     <string name="sure_change_output_type">Вы уверены хотите менять тип выхода? (Прямой, импульсный)</string>
+    <string name="setting_thermostat_error">Ошибка задания параметров термостата</string>
+    <string name="thermostat_properties">Свойства термостата %s</string>
+    <string name="thermostat_n">Термостат %s</string>
+    <string name="turn_on">Включить</string>
+    <string name="turn_off">Выключить</string>
+    <string name="temperature_tcal">Температура + T кал.</string>
+    <string name="target">Целевая температура</string>
+    <string name="hysteresis">Гистересис</string>
+    <string name="calibration">Калибровка</string>
 </resources>

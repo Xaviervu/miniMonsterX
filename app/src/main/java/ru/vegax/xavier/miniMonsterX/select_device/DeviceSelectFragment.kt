@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.appcompat.app.AppCompatDialogFragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.vegax.xavier.miniMonsterX.R
@@ -17,9 +17,8 @@ import ru.vegax.xavier.miniMonsterX.activities.IODataViewModel
 
 class DeviceSelectFragment : AppCompatDialogFragment() {
     private lateinit var mListener: OnFragmentInteractionListener
-    private val viewModel by lazy {
-        ViewModelProviders.of(activity!!).get(IODataViewModel::class.java)
-    }
+    private val viewModel =
+            ViewModelProvider(this).get(IODataViewModel::class.java)
 
     override fun onResume() {
         super.onResume()
@@ -33,7 +32,7 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
         val builder = AlertDialog.Builder(activity)
         val inflater = activity?.layoutInflater
         val parent: ViewGroup? = null
-        val view = inflater?.inflate(R.layout.fragment_select_device, parent, false)
+        val view = inflater?.inflate(R.layout.f_select_device, parent, false)
         builder.setView(view)
 
         val recVListOfDevices: RecyclerView? = view?.findViewById(R.id.recVListOfDevices)

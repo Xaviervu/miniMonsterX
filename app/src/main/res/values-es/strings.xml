@@ -71,4 +71,13 @@
     <string name="version">Versión %1$s</string>
     <string name="change_output">Cambiar el tipo de salida</string>
     <string name="sure_change_output_type">¿Está seguro de que quiere cambiar el tipo de salida? (tipo directo, tipo impulso)</string>
+    <string name="setting_thermostat_error">Error de configuracion de parametros del termostato</string>
+    <string name="thermostat_properties">Propiedades del termostato %s</string>
+    <string name="thermostat_n">Termostato %s</string>
+    <string name="turn_on">Encender</string>
+    <string name="turn_off">Apagar</string>
+    <string name="temperature_tcal">Temperatura + T cal.</string>
+    <string name="target">Temperatura deseada</string>
+    <string name="hysteresis">Histeresis</string>
+    <string name="calibration">Calibración</string>
 </resources>

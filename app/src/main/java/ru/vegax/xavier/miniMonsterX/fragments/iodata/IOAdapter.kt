@@ -9,8 +9,11 @@ import android.view.ViewGroup
 import android.widget.CheckedTextView
 import android.widget.ImageView
 import android.widget.Switch
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import ru.vegax.xavier.miniMonsterX.R
+import ru.vegax.xavier.miniMonsterX.auxiliar.hide
+import ru.vegax.xavier.miniMonsterX.auxiliar.show
 import java.util.*
 
 abstract class IOAdapter
@@ -50,6 +53,9 @@ internal constructor(private val context: Context, //Member variables
                 viewHolderInputs.bindTo(mItemsData[position])
                 viewHolderInputs.mCheckedTextView.setOnLongClickListener(this)
                 viewHolderInputs.mCheckedTextView.tag = position
+
+                viewHolderInputs.txtVTemperature.tag = position
+                viewHolderInputs.txtVTemperature.setOnClickListener(this)
             }
 
             OUTPUT_ELEMENT -> {
@@ -74,8 +80,12 @@ internal constructor(private val context: Context, //Member variables
                 switchItem.tag = position
                 switchItem.setOnClickListener(this)
                 switchItem.setOnLongClickListener(this)
+
                 viewHolderOutputs.mImgViewOutputType.tag = position
                 viewHolderOutputs.mImgViewOutputType.setOnClickListener(this)
+
+                viewHolderOutputs.txtVTemperature.tag = position
+                viewHolderOutputs.txtVTemperature.setOnClickListener(this)
             }
         }
 
@@ -84,10 +94,18 @@ internal constructor(private val context: Context, //Member variables
     internal inner class ViewHolderInputs
     (itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mCheckedTextView: CheckedTextView = itemView.findViewById(R.id.checkedTextView1)
-
+        val txtVTemperature: TextView = itemView.findViewById(R.id.txtVTemperature)
         fun bindTo(currentItem: IOItem) {
             mCheckedTextView.text = currentItem.itemName
             mCheckedTextView.isChecked = currentItem.isOn
+            with(txtVTemperature) {
+                if (currentItem.temperature != null) {
+                    show()
+                    text = context.getString(R.string.temperature, currentItem.temperature.toString())
+                } else {
+                    hide()
+                }
+            }
         }
     }
 
@@ -95,9 +113,18 @@ internal constructor(private val context: Context, //Member variables
     (itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mImgViewOutputType: ImageView = itemView.findViewById(R.id.imageViewOutputs)
         val mSwitchOutput: Switch = itemView.findViewById(R.id.switch1)
+        val txtVTemperature: TextView = itemView.findViewById(R.id.txtVTemperature)
         fun bindTo(currentItem: IOItem) {
             mSwitchOutput.text = currentItem.itemName
             mSwitchOutput.isChecked = currentItem.isOn
+            with(txtVTemperature) {
+                if (currentItem.temperature != null) {
+                    show()
+                    text = context.getString(R.string.temperature, currentItem.temperature.toString())
+                } else {
+                    hide()
+                }
+            }
 
             if (currentItem.isImpulse) {
                 mImgViewOutputType.setImageResource(R.drawable.output_timer)

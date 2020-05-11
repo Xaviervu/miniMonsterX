@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeThermo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txtVTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/thermostat_properties"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Switch
+                android:id="@+id/switchThermostat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:checked="true"
+                android:defaultValue="true"
+                android:focusable="true"
+                android:focusableInTouchMode="false"
+                android:foreground="?attr/selectableItemBackground"
+                android:text="@string/thermostat_n"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textOff="@string/turn_on"
+                android:textOn="@string/turn_off"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtVTitle"
+                tools:ignore="UnusedAttribute" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutThermostat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:layout_constraintBottom_toTopOf="@+id/btnOkTherm"
+                app:layout_constraintEnd_toEndOf="@+id/switchThermostat"
+                app:layout_constraintStart_toStartOf="@+id/switchThermostat"
+                app:layout_constraintTop_toBottomOf="@+id/switchThermostat"
+                app:layout_constraintVertical_bias="0.0">
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/barrierTemperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="end"
+                    app:constraint_referenced_ids="txtVTempPlusCalTitle,txtVTargetTitle,txtVHysteresisTitle,txtVCalibrationTitle"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/txtVTempPlusCalTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/temperature_tcal"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/txtVTempPlusCal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:text="@string/temperature"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    app:layout_constraintBottom_toBottomOf="@+id/txtVTempPlusCalTitle"
+                    app:layout_constraintStart_toEndOf="@+id/txtVTempPlusCalTitle"
+                    app:layout_constraintTop_toTopOf="@+id/txtVTempPlusCalTitle" />
+
+                <TextView
+                    android:id="@+id/txtVTargetTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/target"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtVTempPlusCalTitle" />
+
+                <TextView
+                    android:id="@+id/txtVTargetTemperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:text="@string/temperature"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    app:layout_constraintBottom_toBottomOf="@+id/txtVTargetTitle"
+                    app:layout_constraintStart_toEndOf="@+id/barrierTemperature"
+                    app:layout_constraintTop_toTopOf="@+id/txtVTargetTitle" />
+
+                <TextView
+                    android:id="@+id/txtVHysteresisTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/hysteresis"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtVTargetTitle" />
+
+                <TextView
+                    android:id="@+id/txtVTargetHysteresis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:text="@string/temperature"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    app:layout_constraintBottom_toBottomOf="@+id/txtVHysteresisTitle"
+                    app:layout_constraintStart_toEndOf="@+id/barrierTemperature"
+                    app:layout_constraintTop_toTopOf="@+id/txtVHysteresisTitle" />
+
+                <TextView
+                    android:id="@+id/txtVCalibrationTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/calibration"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtVHysteresisTitle" />
+
+                <TextView
+                    android:id="@+id/txtVCalibrationTemperature"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:text="@string/temperature"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                    app:layout_constraintBottom_toBottomOf="@+id/txtVCalibrationTitle"
+                    app:layout_constraintStart_toEndOf="@+id/barrierTemperature"
+                    app:layout_constraintTop_toTopOf="@+id/txtVCalibrationTitle" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <include
+                android:id="@+id/progBar"
+                layout="@layout/prog_bar_wait"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="parent" />
+
+            <android.widget.Button
+                android:id="@+id/btnOkTherm"
+                style="@style/selectableButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="24dp"
+                android:maxLines="1"
+                android:text="@string/ok"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+</layout>

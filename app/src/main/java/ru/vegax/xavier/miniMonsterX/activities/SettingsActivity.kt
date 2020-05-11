@@ -16,24 +16,23 @@ import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.R.*
 
 
-class SettingsActivity : AppCompatActivity(), OnFocusChangeListener {
+class SettingsActivity : BaseActivity(), OnFocusChangeListener {
 
     // UI references.
     private lateinit var mTxtVUrl: AutoCompleteTextView
     private lateinit var mTxtVPassword: EditText
     private lateinit var mTxtVDeviceName: TextView
     private var mForCreation: Boolean = false
-    private val viewModel by lazy {
-        ViewModelProviders.of(this).get(IODataViewModel::class.java)
-    }
+    private val viewModel =
+            ViewModelProvider(this).get(IODataViewModel::class.java)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (isAndroidTV()) {
@@ -177,6 +176,7 @@ class SettingsActivity : AppCompatActivity(), OnFocusChangeListener {
         }
         return urlComplete
     }
+
     private fun isURLValid(url: String): Boolean {
         return url.length > 1
     }
@@ -184,6 +184,7 @@ class SettingsActivity : AppCompatActivity(), OnFocusChangeListener {
     private fun isPasswordValid(password: String): Boolean {
         return password.length > 1
     }
+
     companion object {
         private const val TAG = "SettingsActivity"
         private const val EXTRA_ID = "ID_EXTRA"

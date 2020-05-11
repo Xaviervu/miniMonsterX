@@ -7,16 +7,19 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 object ApiServiceFactory {
-    private const val DEF_URL = "http://192.168.1.12"
+    private const val DEF_URL = "http://192.168.0.12/"
 
-    fun createService(): ControlDataApi {
-
+    fun createService(useGson: Boolean): ControlDataApi {
+        val gSonConverter = GsonBuilder()
+                .setLenient()
+                .create()
         val httpClient = OkHttpClient.Builder()
         httpClient.addInterceptor(JsonInterceptor())
-        return Retrofit.Builder()
+        val builder = Retrofit.Builder()
                 .baseUrl(DEF_URL)
-                .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
-                .client(httpClient.build())
+        if (useGson) builder.addConverterFactory(GsonConverterFactory.create(gSonConverter))
+        builder.client(httpClient.build())
+        return builder
                 .build()
                 .create(ControlDataApi::class.java)
     }

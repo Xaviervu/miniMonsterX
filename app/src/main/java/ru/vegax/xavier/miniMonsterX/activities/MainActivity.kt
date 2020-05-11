@@ -6,16 +6,12 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.core.view.GravityCompat
@@ -34,11 +30,12 @@ import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.newSettingsIntent
 import ru.vegax.xavier.miniMonsterX.auxiliar.AppUpdater
 import ru.vegax.xavier.miniMonsterX.databinding.ActivityMainBinding
+import ru.vegax.xavier.miniMonsterX.fragments.BaseFragment
 import ru.vegax.xavier.miniMonsterX.fragments.iodata.IOFragment
 import ru.vegax.xavier.miniMonsterX.repository.DeviceData
 import ru.vegax.xavier.miniMonsterX.select_device.DeviceSelectFragment
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, DeviceSelectFragment.OnFragmentInteractionListener {
+class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, DeviceSelectFragment.OnFragmentInteractionListener {
 
     private lateinit var viewBinding: ActivityMainBinding
 
@@ -93,10 +90,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (savedInstanceState == null) {
             val fragment = IOFragment.newInstance()
             mIOFragment = fragment
+            replaceFragment(fragment, R.id.ioFragment, fragment.fragmentTag)
 
-            supportFragmentManager.beginTransaction()
-                    .add(R.id.ioFragment, fragment, fragment.fragmentTag)
-                    .addToBackStack(null).commit()
         } else {
             mIOFragment = supportFragmentManager.findFragmentByTag(IOFragment.TAG) as? IOFragment
         }
@@ -223,6 +218,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        Log.i("key pressed", event.keyCode.toString())
+        return super.dispatchKeyEvent(event)
+    }
+
+    fun openDrawer() {
+        viewBinding.drawerLayout.openDrawer(GravityCompat.START)
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -287,6 +290,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             mIOFragment?.clearData()
             mIOFragment?.cancelTasks()
         }
+    }
+
+    fun addFragment(fragment: BaseFragment) {
+        replaceFragmentWithBackStack(fragment, R.id.ioFragment, fragment.fragmentTag)
     }
 
 
