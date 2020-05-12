@@ -17,8 +17,8 @@ import ru.vegax.xavier.miniMonsterX.activities.IODataViewModel
 
 class DeviceSelectFragment : AppCompatDialogFragment() {
     private lateinit var mListener: OnFragmentInteractionListener
-    private val viewModel =
-            ViewModelProvider(this).get(IODataViewModel::class.java)
+    private lateinit var viewModel: IODataViewModel
+
 
     override fun onResume() {
         super.onResume()
@@ -29,12 +29,14 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        activity?.let {
+            viewModel = ViewModelProvider(it).get(IODataViewModel::class.java)
+        }
         val builder = AlertDialog.Builder(activity)
         val inflater = activity?.layoutInflater
         val parent: ViewGroup? = null
         val view = inflater?.inflate(R.layout.f_select_device, parent, false)
         builder.setView(view)
-
         val recVListOfDevices: RecyclerView? = view?.findViewById(R.id.recVListOfDevices)
 
         recVListOfDevices?.layoutManager = LinearLayoutManager(view?.context)

@@ -18,7 +18,7 @@
         android:fullBackupContent="true"
         android:banner="@drawable/banner"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="@string/build_app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:windowSoftInputMode="stateHidden"
@@ -43,6 +43,10 @@
             android:name="ru.vegax.xavier.miniMonsterX.activities.SettingsActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName="ru.vegax.xavier.miniMonsterX.activities.MainActivity" />
+        <activity
+            android:name=".activities.ThermostatActivity"
+            android:parentActivityName="ru.vegax.xavier.miniMonsterX.activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

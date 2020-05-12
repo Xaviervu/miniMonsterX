@@ -10,12 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.library.BuildConfig.VERSION_NAME
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import ru.vegax.xavier.miniMonsterX.BuildConfig
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.activities.BaseActivity
 import ru.vegax.xavier.miniMonsterX.activities.IODataViewModel
@@ -23,7 +23,6 @@ import ru.vegax.xavier.miniMonsterX.activities.MainActivity
 import ru.vegax.xavier.miniMonsterX.activities.MainActivity.Companion.PREFF_DEV_ID
 import ru.vegax.xavier.miniMonsterX.databinding.IoDataFragmentBinding
 import ru.vegax.xavier.miniMonsterX.fragments.BaseFragment
-import ru.vegax.xavier.miniMonsterX.fragments.thermo.FragmentThermo
 import ru.vegax.xavier.miniMonsterX.repository.LoadingStatus
 import java.util.*
 
@@ -90,7 +89,7 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
             mRecyclerView.adapter = mAdapter
         }
-        viewBinding.txtVVersion.text = getString(R.string.version, BuildConfig.VERSION_NAME)
+        viewBinding.txtVVersion.text = getString(R.string.version, VERSION_NAME)
 
 
         return viewBinding.root
@@ -243,8 +242,9 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         val url = "${viewModel.curDevice?.url}${viewModel.curDevice?.password}/"
         if (viewModel.curDevice != null) {
             val curPos = v.tag as Int
-            val thermostatFragment = FragmentThermo.newInstance(url, curPos)
-            (baseActivity as? MainActivity)?.addFragment(thermostatFragment)
+
+            stopUpdating()
+            (baseActivity as? MainActivity)?.startThermalActivity(url, curPos)
         }
     }
 

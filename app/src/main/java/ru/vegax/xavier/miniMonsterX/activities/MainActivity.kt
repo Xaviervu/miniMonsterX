@@ -1,9 +1,7 @@
 package ru.vegax.xavier.miniMonsterX.activities
 
 import android.app.Activity
-import android.app.UiModeManager
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -27,9 +25,9 @@ import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_NAME
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_PASS
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_URL
-import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.newSettingsIntent
+import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.newInstance
 import ru.vegax.xavier.miniMonsterX.auxiliar.AppUpdater
-import ru.vegax.xavier.miniMonsterX.databinding.ActivityMainBinding
+import ru.vegax.xavier.miniMonsterX.databinding.AMainBinding
 import ru.vegax.xavier.miniMonsterX.fragments.BaseFragment
 import ru.vegax.xavier.miniMonsterX.fragments.iodata.IOFragment
 import ru.vegax.xavier.miniMonsterX.repository.DeviceData
@@ -37,7 +35,7 @@ import ru.vegax.xavier.miniMonsterX.select_device.DeviceSelectFragment
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, DeviceSelectFragment.OnFragmentInteractionListener {
 
-    private lateinit var viewBinding: ActivityMainBinding
+    private lateinit var viewBinding: AMainBinding
 
     private lateinit var appUpdater: AppUpdater
     private var mDeviceList: List<DeviceData>? = null
@@ -54,7 +52,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         appUpdater = AppUpdater(this)
         viewBinding = DataBindingUtil.setContentView(
                 this,
-                R.layout.activity_main)
+                R.layout.a_main)
         setContentView(viewBinding.root)
 
         with(viewBinding.mainIOLayout.vToolbar.updateView) {
@@ -133,11 +131,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-    private fun isAndroidTV(): Boolean {
-        val uiModeManager = getSystemService(UI_MODE_SERVICE) as? UiModeManager
-        return (uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION)
-    }
-
     private fun setUpdateLayout(updateLayout: View, btnUpdate: Button, imgVCloseUpdate: ImageView) {
         appUpdater.setUpdateLayout(updateLayout, btnUpdate, imgVCloseUpdate)
 
@@ -174,7 +167,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             mIOFragment?.stopUpdating()
 
             val curDevice = viewModel.curDevice
-            val intent = newSettingsIntent(this, curDevice?.deviceId ?: 0, curDevice?.deviceName
+            val intent = newInstance(this, curDevice?.deviceId ?: 0, curDevice?.deviceName
                     ?: "",
                     curDevice?.url ?: DEFAULT_URL, curDevice?.password
                     ?: DEFAULT_PASS, curDevice == null)
@@ -206,7 +199,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.nav_addDevice -> {
                 mIOFragment?.stopUpdating()
 
-                val intent = newSettingsIntent(this, 0, "",
+                val intent = newInstance(this, 0, "",
                         DEFAULT_URL, DEFAULT_PASS, true)
 
                 startActivityForResult(intent, SETTINGS)
@@ -218,6 +211,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
+    fun startThermalActivity(url: String, thermostatN: Int) {
+
+        val intent = ThermostatActivity.newInstance(this, url, thermostatN)
+        startActivityForResult(intent, SETTINGS)
+    }
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         Log.i("key pressed", event.keyCode.toString())
         return super.dispatchKeyEvent(event)

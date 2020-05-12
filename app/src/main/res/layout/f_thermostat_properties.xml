@@ -14,17 +14,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/txtVTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/thermostat_properties"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <Switch
                 android:id="@+id/switchThermostat"
                 android:layout_width="0dp"
@@ -45,7 +34,7 @@
                 android:textOn="@string/turn_off"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txtVTitle"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:ignore="UnusedAttribute" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -53,6 +42,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@+id/btnOkTherm"
                 app:layout_constraintEnd_toEndOf="@+id/switchThermostat"
                 app:layout_constraintStart_toStartOf="@+id/switchThermostat"
@@ -84,9 +74,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
-                    android:text="@string/temperature"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     app:layout_constraintBottom_toBottomOf="@+id/txtVTempPlusCalTitle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toEndOf="@+id/txtVTempPlusCalTitle"
                     app:layout_constraintTop_toTopOf="@+id/txtVTempPlusCalTitle" />
 
@@ -106,9 +97,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
-                    android:text="@string/temperature"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     app:layout_constraintBottom_toBottomOf="@+id/txtVTargetTitle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toEndOf="@+id/barrierTemperature"
                     app:layout_constraintTop_toTopOf="@+id/txtVTargetTitle" />
 
@@ -128,9 +120,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
-                    android:text="@string/temperature"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     app:layout_constraintBottom_toBottomOf="@+id/txtVHysteresisTitle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toEndOf="@+id/barrierTemperature"
                     app:layout_constraintTop_toTopOf="@+id/txtVHysteresisTitle" />
 
@@ -150,9 +143,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginLeft="16dp"
-                    android:text="@string/temperature"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     app:layout_constraintBottom_toBottomOf="@+id/txtVCalibrationTitle"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
                     app:layout_constraintStart_toEndOf="@+id/barrierTemperature"
                     app:layout_constraintTop_toTopOf="@+id/txtVCalibrationTitle" />
             </androidx.constraintlayout.widget.ConstraintLayout>

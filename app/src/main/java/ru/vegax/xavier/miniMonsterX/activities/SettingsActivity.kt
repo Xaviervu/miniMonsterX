@@ -1,10 +1,8 @@
 package ru.vegax.xavier.miniMonsterX.activities
 
 import android.app.Activity
-import android.app.UiModeManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.MenuItem
@@ -30,15 +28,16 @@ class SettingsActivity : BaseActivity(), OnFocusChangeListener {
     private lateinit var mTxtVPassword: EditText
     private lateinit var mTxtVDeviceName: TextView
     private var mForCreation: Boolean = false
-    private val viewModel =
-            ViewModelProvider(this).get(IODataViewModel::class.java)
+    private lateinit var viewModel: IODataViewModel
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (isAndroidTV()) {
             AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
         }
-        setContentView(layout.activity_settings)
+        setContentView(layout.a_settings)
+        viewModel = ViewModelProvider(this).get(IODataViewModel::class.java)
         // Set up the login form.
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(id.settingsToolbar)
 
@@ -92,11 +91,6 @@ class SettingsActivity : BaseActivity(), OnFocusChangeListener {
         }
         return true
 //        return super.onOptionsItemSelected(item)
-    }
-
-    private fun isAndroidTV(): Boolean {
-        val uiModeManager = getSystemService(UI_MODE_SERVICE) as? UiModeManager
-        return (uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION)
     }
 
 
@@ -192,7 +186,7 @@ class SettingsActivity : BaseActivity(), OnFocusChangeListener {
         const val EXTRA_URL = "URL_EXTRA"
         const val EXTRA_PASS = "PASS_EXTRA"
         const val EXTRA_FOR_CREATION = "FOR_CREATION_EXTRA"
-        fun newSettingsIntent(context: Context, id: Long, name: String, url: String, password: String, forCreation: Boolean): Intent {
+        fun newInstance(context: Context, id: Long, name: String, url: String, password: String, forCreation: Boolean): Intent {
             val intent = Intent(context, SettingsActivity::class.java)
             intent.putExtra(EXTRA_ID, id)
             intent.putExtra(EXTRA_NAME, name)

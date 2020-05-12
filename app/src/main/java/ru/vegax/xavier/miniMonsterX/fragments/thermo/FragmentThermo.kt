@@ -3,6 +3,7 @@ package ru.vegax.xavier.miniMonsterX.fragments.thermo
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
@@ -16,6 +17,7 @@ import ru.vegax.xavier.miniMonsterX.auxiliar.setVisible
 import ru.vegax.xavier.miniMonsterX.databinding.FThermostatPropertiesBinding
 import ru.vegax.xavier.miniMonsterX.fragments.BaseFragment
 import ru.vegax.xavier.miniMonsterX.models.Status
+
 
 class FragmentThermo : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     override val fragmentTag: String
@@ -31,6 +33,7 @@ class FragmentThermo : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         val bundle = arguments
         if (bundle != null) {
             activity?.let { fragmentActivity ->
@@ -39,6 +42,7 @@ class FragmentThermo : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
                 setHasOptionsMenu(true)
                 viewModel = ViewModelProvider(this, ThermostatVMFactory(fragmentActivity.application,
                         defUrl, thermostatN)).get(ThermostatViewModel::class.java)
+
             }
         } else {
             throw IllegalStateException()
@@ -50,11 +54,9 @@ class FragmentThermo : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         viewBinding.swipeThermo.setOnRefreshListener(this)
         return viewBinding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(viewBinding) {
-            txtVTitle.text = getString(R.string.thermostat_properties, (thermostatN + 1).toString())
             switchThermostat.text = getString(R.string.thermostat_n, (thermostatN + 1).toString())
             btnOkTherm.setOnClickListener { onSuccess() }
         }
@@ -121,7 +123,7 @@ class FragmentThermo : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun onSuccess() {
-        back()
+        baseActivity?.finish()
     }
 
     private fun setProgress(progress: Boolean) {
@@ -130,6 +132,12 @@ class FragmentThermo : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> back()
+        }
+        return super.onOptionsItemSelected(item)
+    }
     private fun String.isValidTemperature(): Boolean = this.isNotEmpty()// todo: XV check its a double within bounds
 
     companion object {
