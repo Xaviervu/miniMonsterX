@@ -89,4 +89,5 @@
     <string name="target">Target</string>
     <string name="hysteresis">Hysteresis</string>
     <string name="calibration">Calibration</string>
+    <string name="set_temperature">Set temperature</string>
 </resources>

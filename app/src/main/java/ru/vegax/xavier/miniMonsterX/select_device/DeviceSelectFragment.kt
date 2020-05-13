@@ -6,13 +6,14 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.activities.IODataViewModel
+import ru.vegax.xavier.miniMonsterX.activities.MainActivity
 
 
 class DeviceSelectFragment : AppCompatDialogFragment() {
@@ -46,7 +47,7 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
         if (deviceList != null && view != null) {
             val adapter = object : DeviceSelectAdapter(view.context, deviceList, currDevice) {
                 override fun onClick(v: View) {
-                    if (v is Button) {
+                    if (v is ImageView) {
                         onDeleteItem(v.tag as Long)
                     } else {
                         onButtonPressed(v.tag as Long)
@@ -66,20 +67,11 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
     }
 
     fun onDeleteItem(deviceId: Long) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle(getString(R.string.delete_device))
-        builder.setMessage(getString(R.string.sure_delete_device))
-        builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
+        (activity as MainActivity).showAlertDialog(getString(R.string.delete_device), getString(R.string.sure_delete_device)) {
             mListener.onDeleteItem(deviceId)
-
         }
-        builder.setNegativeButton(getString(R.string.no)) { _, _ ->
-            onStop()
-        }
-        val dialog: AlertDialog = builder.create()
-
-        dialog.show()
     }
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

@@ -44,4 +44,5 @@ abstract class BaseActivity : AppCompatActivity() {
                 .addToBackStack(tag)
                 .commitAllowingStateLoss()
     }
+
 }

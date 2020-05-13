@@ -80,4 +80,5 @@
     <string name="target">Temperatura deseada</string>
     <string name="hysteresis">Histeresis</string>
     <string name="calibration">Calibración</string>
+    <string name="set_temperature">Introduzca la temperatura</string>
 </resources>

@@ -35,12 +35,10 @@ class ThermostatActivity : BaseActivity(), OnFocusChangeListener {
                 layout.a_fragment_container_with_toolbar)
 
         setContentView(viewBinding.root)
-
         setToolbar(viewBinding.vToolbar.toolbar)
         title = getString(string.thermostat_properties, (thermostatN + 1).toString())
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         if (supportFragmentManager.findFragmentById(id.container) == null) {
             val thermostatFragment = FragmentThermo.newInstance(url, thermostatN)
             replaceFragment(thermostatFragment, id.container, thermostatFragment.fragmentTag)

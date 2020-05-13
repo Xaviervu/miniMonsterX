@@ -80,4 +80,5 @@
     <string name="target">Целевая температура</string>
     <string name="hysteresis">Гистересис</string>
     <string name="calibration">Калибровка</string>
+    <string name="set_temperature">Задавать температуру</string>
 </resources>

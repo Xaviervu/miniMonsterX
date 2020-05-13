@@ -1,6 +1,5 @@
 package ru.vegax.xavier.miniMonsterX.fragments.iodata
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
@@ -106,10 +105,10 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         val curContext = context
         if (curContext != null) {
             val d = Dialog(curContext)
-            d.setContentView(R.layout.dialog_set_name)
+            d.setContentView(R.layout.d_set_name)
             val btnOk = d.findViewById(R.id.btnSet) as TextView
             val btnCancel = d.findViewById(R.id.btnCancel) as TextView
-            val portName = d.findViewById(R.id.edTextPortName) as EditText
+            val portName = d.findViewById(R.id.txtVMessage) as EditText
             portName.setText(mIoData[curPos].itemName)
             btnOk.setOnClickListener {
                 val name = portName.text.toString()
@@ -249,17 +248,9 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun onChangeOutputMode(view: View) {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle(getString(R.string.change_output))
-        builder.setMessage(getString(R.string.sure_change_output_type))
-        builder.setPositiveButton(getString(R.string.yes)) { _, _ ->
+        (activity as MainActivity).showAlertDialog(getString(R.string.change_output), getString(R.string.sure_change_output_type)) {
             toggleOutputType(view)
-
         }
-        builder.setNegativeButton(getString(R.string.no)) { _, _ ->
-        }
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
     }
 
     private fun toggleOutputType(view: View) {

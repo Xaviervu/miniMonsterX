@@ -1,6 +1,7 @@
 package ru.vegax.xavier.miniMonsterX.activities
 
 import android.app.Activity
+import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -294,7 +295,26 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         replaceFragmentWithBackStack(fragment, R.id.ioFragment, fragment.fragmentTag)
     }
 
+    fun showAlertDialog(title: String, message: String, result: () -> Unit) {
 
+        val d = Dialog(this)
+        d.setContentView(R.layout.d_alert)
+        val btnOk = d.findViewById<TextView>(R.id.btnSet)
+        val btnCancel = d.findViewById<TextView>(R.id.btnCancel)
+        val txtVTitle = d.findViewById<TextView>(R.id.txtVDiagTitle)
+        txtVTitle.text = title
+        val txtVMessage = d.findViewById<TextView>(R.id.txtVMessage)
+        txtVMessage.text = message
+        btnOk.setOnClickListener {
+            result()
+            d.dismiss()
+
+        }
+        btnCancel.setOnClickListener {
+            d.dismiss()
+        }
+        d.show()
+    }
     companion object {
         private const val TAG = "MainActivity"
         private const val REQUEST_CODE_UPDATE = 1001

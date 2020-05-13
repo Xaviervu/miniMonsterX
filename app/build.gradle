@@ -10,8 +10,8 @@ android {
         applicationId "ru.vegax.xavier.miniMonsterX"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 29 //divisible by 10 -> force update
-        versionName "2.29"
+        versionCode 40 //divisible by 10 -> force update
+        versionName "2.40"
         multiDexEnabled true
         vectorDrawables.useSupportLibrary = true
     }

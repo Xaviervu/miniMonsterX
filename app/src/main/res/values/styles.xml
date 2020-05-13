@@ -1,8 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight">
-        <!-- Customize your theme here. -->
+    <style name="AppTheme" parent="@style/Theme.MaterialComponents.DayNight.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -11,12 +9,12 @@
     </style>
 
     <style name="SplashTheme" parent="@style/Theme.MaterialComponents.DayNight.NoActionBar">
-        <!--        <item name="android:windowBackground">@drawable/bg_splash</item>-->
         <item name="android:colorPrimaryDark" tools:ignore="NewApi">@color/transparent</item>
         <item name="android:navigationBarColor" tools:targetApi="21">
             @color/transparent
         </item>
     </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="android:windowDisablePreview">true</item>
         <item name="android:windowIsTranslucent">true</item>
@@ -25,7 +23,6 @@
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
     <style name="AppTheme.PopupOverlay" parent="Theme.MaterialComponents.DayNight" />
 
     <style name="selectableButton" parent="@style/Widget.AppCompat.Button.Colored">

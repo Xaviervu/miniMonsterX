@@ -1,13 +1,18 @@
 package ru.vegax.xavier.miniMonsterX.fragments.thermo
 
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.NumberPicker
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -17,6 +22,7 @@ import ru.vegax.xavier.miniMonsterX.auxiliar.setVisible
 import ru.vegax.xavier.miniMonsterX.databinding.FThermostatPropertiesBinding
 import ru.vegax.xavier.miniMonsterX.fragments.BaseFragment
 import ru.vegax.xavier.miniMonsterX.models.Status
+import kotlin.math.round
 
 
 class FragmentThermo : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -54,14 +60,92 @@ class FragmentThermo : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         viewBinding.swipeThermo.setOnRefreshListener(this)
         return viewBinding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(viewBinding) {
             switchThermostat.text = getString(R.string.thermostat_n, (thermostatN + 1).toString())
             btnOkTherm.setOnClickListener { onSuccess() }
+            txtVTargetTemperature.setOnClickListener {
+                showNumberPickerDialog(
+                        value = viewModel.event.value?.data?.targetT ?: 0.0, // in kilograms
+                        stepSize = 0.1,
+                        range = -55.0..125.0,
+                        formatToString = { getString(R.string.temperature, it.toString()) },
+                        valueChooseAction = {
+                            viewModel.setTargetTemperature(it)
+                        }
+                )
+
+            }
+            txtVTargetHysteresis.setOnClickListener {
+                showNumberPickerDialog(
+                        value = viewModel.event.value?.data?.hysteresis ?: 0.0, // in kilograms
+                        stepSize = 0.1,
+                        range = -10.0..10.0,
+                        formatToString = { getString(R.string.temperature, it.toString()) },
+                        valueChooseAction = {
+                            viewModel.setHysteresis(it)
+                        }
+                )
+
+            }
+            txtVCalibrationTemperature.setOnClickListener {
+                showNumberPickerDialog(
+                        value = viewModel.event.value?.data?.calT ?: 0.0, // in kilograms
+                        stepSize = 0.1,
+                        range = -10.0..10.0,
+                        formatToString = { getString(R.string.temperature, it.toString()) },
+                        valueChooseAction = {
+                            viewModel.setCalTemperature(it)
+                        }
+                )
+
+            }
         }
     }
 
+
+    private fun Fragment.showNumberPickerDialog(
+            value: Double,
+            range: ClosedRange<Double>,
+            stepSize: Double,
+            formatToString: (Double) -> String,
+            valueChooseAction: (Double) -> Unit
+    ) {
+        context?.let {
+            val d = Dialog(it)
+            d.setContentView(R.layout.d_picker_select)
+            val btnOk = d.findViewById(R.id.btnSet) as TextView
+            val btnCancel = d.findViewById(R.id.btnMenuCancel) as TextView
+            val numberPicker = d.findViewById(R.id.numberPicker) as NumberPicker
+            val actualMinValue = (range.start / stepSize).toInt()
+            numberPicker.apply {
+                setFormatter { tempString -> formatToString(((tempString.toDouble() + actualMinValue) * stepSize).round(1)) }
+                wrapSelectorWheel = false
+                minValue = 0
+                maxValue = (range.endInclusive / stepSize).toInt() - actualMinValue
+                this.value = (value / stepSize).toInt() - actualMinValue
+
+                // NOTE: workaround for a bug that rendered the selected value wrong until user scrolled, see also: https://stackoverflow.com/q/27343772/3451975
+                (NumberPicker::class.java.getDeclaredField("mInputText").apply { isAccessible = true }.get(this) as EditText).filters = emptyArray()
+            }
+            btnOk.setOnClickListener {
+                valueChooseAction(((numberPicker.value.toDouble() + actualMinValue) * stepSize).round(1))
+                d.dismiss()
+            }
+            btnCancel.setOnClickListener {
+                d.dismiss()
+            }
+            d.show()
+        }
+    }
+
+    private fun Double.round(decimals: Int): Double {
+        var multiplier = 1.0
+        repeat(decimals) { multiplier *= 10 }
+        return round(this * multiplier) / multiplier
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -122,6 +206,7 @@ class FragmentThermo : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         }
     }
 
+
     private fun onSuccess() {
         baseActivity?.finish()
     }
@@ -138,7 +223,6 @@ class FragmentThermo : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         }
         return super.onOptionsItemSelected(item)
     }
-    private fun String.isValidTemperature(): Boolean = this.isNotEmpty()// todo: XV check its a double within bounds
 
     companion object {
         private const val TAG = "FragmentThermo"
