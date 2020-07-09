@@ -9,9 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.databinding.DataBindingUtil
-import androidx.databinding.library.BuildConfig.VERSION_NAME
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
+import androidx.multidex.BuildConfig.VERSION_NAME
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
