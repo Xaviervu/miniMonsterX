@@ -194,10 +194,8 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
                 if (!ioDataFull[index].isHidden) position++
                 if (!itemsList[index].isHidden) addPosition++
                 if (!ioDataFull[index].isHidden && itemsList[index].isHidden) {
-                    Log.d(TAG, "observeViewModel: removed $position ${ioDataFull[index].itemName}")
                     adapter.notifyItemRemoved(position)
                 } else if (ioDataFull[index].isHidden && !itemsList[index].isHidden) {
-                    Log.d(TAG, "observeViewModel: added $addPosition ${ioDataFull[index].itemName}")
                     adapter.notifyItemInserted(addPosition)
                 }
             }
@@ -207,7 +205,6 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
                 if (!itemsList[index].isHidden) position++
                 if ((ioItem.isOn.xor(itemsList[index].isOn) || ioItem.isOutput.xor(itemsList[index].isOutput) ||
                                 ioItem.temperature != itemsList[index].temperature) && !itemsList[index].isHidden) {
-                    Log.d(TAG, "observeViewModel: changed $position ${ioDataFull[index].itemName}")
                     adapter.notifyItemChanged(position)
                 }
             }

@@ -65,15 +65,11 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
     fun getDevice(deviceID: Long) = ioThread {
         Log.d(TAG, "getDevice: $deviceID")
         curDevice = dao.currDevice(deviceID)
-//        if(DevicesDb.migratedFrom1To2){
-//            curDevice.hiddenInputs[0] = false
-//        }
         Log.d(TAG, "getDevice: $curDevice, post Value!")
         mCurrDeviceLiveData.postValue(curDevice)
         cyclicRequest?.cancel()
         getDataCyclically()
     }
-    //REST functions and values
 
     private var cyclicRequest: Job? = null
     private var outRequest: Job? = null

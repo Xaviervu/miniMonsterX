@@ -1,11 +1,8 @@
 package ru.vegax.xavier.miniMonsterX.fragments.iodata.port_select
 
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.vegax.xavier.miniMonsterX.R
@@ -13,9 +10,6 @@ import ru.vegax.xavier.miniMonsterX.databinding.ListItemPortsBinding
 import ru.vegax.xavier.miniMonsterX.repository.DeviceData
 
 class PortSelectAdapter(private val deviceData: DeviceData, private val isOutputList: List<Boolean>, private val onClickListener: (newDeviceData: DeviceData) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    init {
-        Log.d(TAG, "deviceData: ${deviceData.hiddenInputs}")
-    }
 
     override fun getItemCount(): Int {
         return deviceData.impulseTypes.size
