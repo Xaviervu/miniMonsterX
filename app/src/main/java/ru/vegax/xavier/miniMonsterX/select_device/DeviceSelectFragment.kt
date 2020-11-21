@@ -36,7 +36,7 @@ class DeviceSelectFragment : AppCompatDialogFragment() {
         val builder = AlertDialog.Builder(activity)
         val inflater = activity?.layoutInflater
         val parent: ViewGroup? = null
-        val view = inflater?.inflate(R.layout.f_select_device, parent, false)
+        val view = inflater?.inflate(R.layout.f_select_device_or_port, parent, false)
         builder.setView(view)
         val recVListOfDevices: RecyclerView? = view?.findViewById(R.id.recVListOfDevices)
 

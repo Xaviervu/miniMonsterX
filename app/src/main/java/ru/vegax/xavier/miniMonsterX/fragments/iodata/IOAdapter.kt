@@ -8,18 +8,25 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckedTextView
 import android.widget.ImageView
-import android.widget.Switch
 import android.widget.TextView
+import androidx.appcompat.widget.SwitchCompat
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.auxiliar.hide
+import ru.vegax.xavier.miniMonsterX.auxiliar.setVisible
 import ru.vegax.xavier.miniMonsterX.auxiliar.show
+import ru.vegax.xavier.miniMonsterX.databinding.ListItemInputBinding
+import ru.vegax.xavier.miniMonsterX.databinding.ListItemOutputBinding
+import ru.vegax.xavier.miniMonsterX.databinding.ListItemPortsBinding
 import java.util.*
 
-abstract class IOAdapter
-internal constructor(private val context: Context, //Member variables
-                     private val mItemsData: ArrayList<IOItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnClickListener, View.OnLongClickListener {
-
+class IOAdapter(private val context: Context, //Member variables
+                val mItemsData: ArrayList<IOItem>,
+                val clickListener: (Int) -> Unit,
+                val editNameListener: (Int) -> Unit,
+                val editTypeListener: (Int) -> Unit,
+                val tempClickListener: (Int) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     override fun getItemCount(): Int {
 
         return mItemsData.size
@@ -38,8 +45,9 @@ internal constructor(private val context: Context, //Member variables
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            OUTPUT_ELEMENT -> ViewHolderOutputs(LayoutInflater.from(context).inflate(R.layout.list_item_output, parent, false))
-            else -> ViewHolderInputs(LayoutInflater.from(context).inflate(R.layout.list_item_input, parent, false))
+
+            OUTPUT_ELEMENT -> ViewHolderOutputs(DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.list_item_output, parent, false))
+            else -> ViewHolderInputs(DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.list_item_input, parent, false))
         }
 
     }
@@ -50,19 +58,22 @@ internal constructor(private val context: Context, //Member variables
         when (holder.itemViewType) {
             INPUT_ELEMENT -> {
                 val viewHolderInputs = holder as ViewHolderInputs
-                viewHolderInputs.bindTo(mItemsData[position])
-                viewHolderInputs.mCheckedTextView.setOnLongClickListener(this)
-                viewHolderInputs.mCheckedTextView.tag = position
-
-                viewHolderInputs.txtVTemperature.tag = position
-                viewHolderInputs.txtVTemperature.setOnClickListener(this)
+                val currentItem = mItemsData[position]
+                viewHolderInputs.bindTo(currentItem)
+                viewHolderInputs.binding.checkedTextView1.setOnLongClickListener {
+                    clickListener.invoke(currentItem.portId)
+                    true
+                }
+                viewHolderInputs.binding.txtVTemperature.setOnClickListener {
+                    tempClickListener.invoke(currentItem.portId)
+                }
             }
 
             OUTPUT_ELEMENT -> {
                 val viewHolderOutputs = holder as ViewHolderOutputs
                 val currentItem = mItemsData[position]
                 viewHolderOutputs.bindTo(currentItem)
-                val switchItem = viewHolderOutputs.mSwitchOutput
+                val switchItem = viewHolderOutputs.binding.switchOutput
                 switchItem.setOnTouchListener { _, event ->
                     when (event.actionMasked) {
                         MotionEvent.ACTION_MOVE -> true
@@ -77,61 +88,67 @@ internal constructor(private val context: Context, //Member variables
                     }
                 }
                 switchItem.isFocusableInTouchMode = false
-                switchItem.tag = position
-                switchItem.setOnClickListener(this)
-                switchItem.setOnLongClickListener(this)
+                switchItem.setOnClickListener {
+                    clickListener.invoke(currentItem.portId)
+                }
+                switchItem.setOnLongClickListener {
+                    editNameListener.invoke(currentItem.portId)
+                    true
+                }
 
-                viewHolderOutputs.mImgViewOutputType.tag = position
-                viewHolderOutputs.mImgViewOutputType.setOnClickListener(this)
+                viewHolderOutputs.binding.imageViewOutputs.setOnLongClickListener {
+                    editTypeListener.invoke(currentItem.portId)
+                    true
+                }
 
-                viewHolderOutputs.txtVTemperature.tag = position
-                viewHolderOutputs.txtVTemperature.setOnClickListener(this)
+                viewHolderOutputs.binding.txtVTemperature.setOnClickListener {
+                    tempClickListener.invoke(currentItem.portId)
+                }
             }
         }
 
     }
 
-    internal inner class ViewHolderInputs
-    (itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val mCheckedTextView: CheckedTextView = itemView.findViewById(R.id.checkedTextView1)
-        val txtVTemperature: TextView = itemView.findViewById(R.id.txtVTemperature)
+    internal inner class ViewHolderInputs(val binding: ListItemInputBinding) : RecyclerView.ViewHolder(binding.root) {
+
         fun bindTo(currentItem: IOItem) {
-            mCheckedTextView.text = currentItem.itemName
-            mCheckedTextView.isChecked = currentItem.isOn
-            with(txtVTemperature) {
-                if (currentItem.temperature != null) {
-                    show()
-                    text = context.getString(R.string.temperature, currentItem.temperature.toString())
-                } else {
-                    hide()
+            with(binding) {
+                checkedTextView1.text = currentItem.itemName
+                checkedTextView1.isChecked = currentItem.isOn
+                with(txtVTemperature) {
+                    if (currentItem.temperature != null) {
+                        show()
+                        text = context.getString(R.string.temperature, currentItem.temperature.toString())
+                    } else {
+                        hide()
+                    }
                 }
             }
         }
     }
 
-    internal inner class ViewHolderOutputs
-    (itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val mImgViewOutputType: ImageView = itemView.findViewById(R.id.imageViewOutputs)
-        val mSwitchOutput: Switch = itemView.findViewById(R.id.switch1)
-        val txtVTemperature: TextView = itemView.findViewById(R.id.txtVTemperature)
+    internal inner class ViewHolderOutputs(val binding: ListItemOutputBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bindTo(currentItem: IOItem) {
-            mSwitchOutput.text = currentItem.itemName
-            mSwitchOutput.isChecked = currentItem.isOn
-            with(txtVTemperature) {
-                if (currentItem.temperature != null) {
-                    show()
-                    text = context.getString(R.string.temperature, currentItem.temperature.toString())
+            with(binding) {
+                switchOutput.text = currentItem.itemName
+                switchOutput.isChecked = currentItem.isOn
+                with(txtVTemperature) {
+                    if (currentItem.temperature != null) {
+                        show()
+                        text = context.getString(R.string.temperature, currentItem.temperature.toString())
+                    } else {
+                        hide()
+                    }
+                }
+
+                if (currentItem.isImpulse) {
+                    imageViewOutputs.setImageResource(R.drawable.output_timer)
                 } else {
-                    hide()
+                    imageViewOutputs.setImageResource(R.drawable.output)
                 }
             }
-
-            if (currentItem.isImpulse) {
-                mImgViewOutputType.setImageResource(R.drawable.output_timer)
-            } else {
-                mImgViewOutputType.setImageResource(R.drawable.output)
-            }
         }
+
     }
 
     companion object {

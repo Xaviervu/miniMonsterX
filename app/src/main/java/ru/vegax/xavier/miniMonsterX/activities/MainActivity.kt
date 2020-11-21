@@ -17,7 +17,6 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
 import com.google.android.material.internal.NavigationMenuView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED
@@ -234,17 +233,24 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 val name = data?.getStringExtra(EXTRA_NAME) ?: ""
                 val urlAddress = data?.getStringExtra(EXTRA_URL) ?: ""
                 val password = data?.getStringExtra(EXTRA_PASS) ?: ""
+                val initialHiddenList = MutableList(PORT_NUMBER) {true}
+                initialHiddenList[0] = false
                 if (forCreation) {
-                    val newDevice = DeviceData(name, urlAddress, password, MutableList(PORT_NUMBER) { "port$it" }, MutableList(PORT_NUMBER) { false })
+                    val newDevice = DeviceData(
+                            name,
+                            urlAddress,
+                            password,
+                            MutableList(PORT_NUMBER) { "port$it" },
+                            MutableList(PORT_NUMBER) { false },
+                            initialHiddenList
+                    )
                     viewModel.insert(newDevice)
                 } else {
                     val curDevice = viewModel.curDevice
-                    if (curDevice != null) {
-                        curDevice.deviceName = name
-                        curDevice.url = urlAddress
-                        curDevice.password = password
-                        viewModel.insert(curDevice)
-                    }
+                    curDevice?.deviceName = name
+                    curDevice?.url = urlAddress
+                    curDevice?.password = password
+                    curDevice?.let { viewModel.insert(it) }
                 }
 
             } else {

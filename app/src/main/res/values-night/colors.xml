@@ -3,4 +3,6 @@
     <color name="accent_selected">#AAAAFE</color>
     <color name="filled_button_border">#C0C0FF</color>
     <color name="colorAccent">#A2ABFF</color>
+
+    <color name="secondaryTextColor">#4C4C4C</color>
 </resources>

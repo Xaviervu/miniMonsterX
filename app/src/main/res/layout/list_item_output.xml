@@ -1,81 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp">
+<layout>
 
-    <ImageView
-        android:id="@+id/imageViewOutputs"
-        android:focusable="true"
-        android:foreground="?attr/selectableItemBackground"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_weight="1"
-        android:contentDescription="@string/output_icon"
-        app:layout_constraintBottom_toBottomOf="@+id/switch1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/switch1"
-        app:srcCompat="@drawable/output"
-        android:padding="6dp"
-        tools:ignore="UnusedAttribute" />
-
-    <TextView
-        android:id="@+id/txtVTemperature"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:focusable="true"
-        android:focusableInTouchMode="false"
-        android:fontFamily="sans-serif-thin"
-        android:foreground="?attr/selectableItemBackground"
-        android:nextFocusLeft="@id/imageViewOutputs"
-        android:nextFocusRight="@id/switch1"
-        android:text="@string/temperature"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/switch1"
-        app:layout_constraintStart_toEndOf="@+id/imageViewOutputs"
-        app:layout_constraintTop_toTopOf="@+id/switch1"
-        tools:ignore="UnusedAttribute" />
-
-    <Switch
-        android:id="@+id/switch1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_weight="1"
-        android:checked="false"
-        android:defaultValue="true"
-        android:focusable="true"
-        android:focusableInTouchMode="false"
-        android:fontFamily="sans-serif-thin"
-        android:foreground="?attr/selectableItemBackground"
-        android:text="@string/set_output"
-        android:textSize="@dimen/input_output_text_size"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/txtVTemperature"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="UnusedAttribute" />
-
-    <View
-        android:id="@+id/divider"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="8dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewOutputs"
-        tools:layout_editor_absoluteX="10dp" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <ImageView
+            android:id="@+id/imageViewOutputs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/output_icon"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:padding="6dp"
+            app:layout_constraintBottom_toBottomOf="@+id/switchOutput"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/switchOutput"
+            app:srcCompat="@drawable/output"
+            tools:ignore="UnusedAttribute" />
+
+        <TextView
+            android:id="@+id/txtVTemperature"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:fontFamily="sans-serif-thin"
+            android:foreground="?attr/selectableItemBackground"
+            android:nextFocusLeft="@id/imageViewOutputs"
+            android:nextFocusRight="@id/switchOutput"
+            android:text="@string/temperature"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="@+id/switchOutput"
+            app:layout_constraintStart_toEndOf="@+id/imageViewOutputs"
+            app:layout_constraintTop_toTopOf="@+id/switchOutput"
+            tools:ignore="UnusedAttribute" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switchOutput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_weight="1"
+            android:checked="false"
+            android:defaultValue="true"
+            android:focusable="true"
+            android:focusableInTouchMode="false"
+            android:fontFamily="sans-serif-thin"
+            android:foreground="?attr/selectableItemBackground"
+            android:text="@string/set_output"
+            android:textSize="@dimen/input_output_text_size"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/txtVTemperature"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="UnusedAttribute" />
+
+        <View
+            android:id="@+id/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintTop_toBottomOf="@+id/imageViewOutputs"
+            tools:layout_editor_absoluteX="10dp" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

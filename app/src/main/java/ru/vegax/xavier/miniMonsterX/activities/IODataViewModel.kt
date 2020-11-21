@@ -24,19 +24,20 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
     private val mLoadingStatus = MutableLiveData<LoadingStatus>()
     val loadingStatus: LiveData<LoadingStatus> = mLoadingStatus
 
-    private val mIOData = MutableLiveData<List<IOItem>>()
-    val controlData: LiveData<List<IOItem>> = mIOData
+    private val iOData = MutableLiveData<List<IOItem>>()
+    val controlData: LiveData<List<IOItem>> = iOData
 
     var curDevice: DeviceData? = null
         private set
-    private val mCurrDeviceLiveData = MutableLiveData<DeviceData?>()
-    val currentDeviceLiveData: LiveData<DeviceData?> = mCurrDeviceLiveData
+    private val mCurrDeviceLiveData = MutableLiveData<DeviceData>()
+    val currentDeviceLiveData: LiveData<DeviceData> = mCurrDeviceLiveData
 
     val allDevices = dao.allDevices()
 
     init {
         Log.d(TAG, "init")
     }
+
     fun clearAndInsert(devices: List<DeviceData>) = ioThread {
         dao.deleteAll()
         dao.insert(devices)
@@ -49,6 +50,8 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
 
     fun update(deviceData: DeviceData) = ioThread {
         dao.update(deviceData)
+        curDevice = dao.currDevice(deviceData.deviceId)
+        mCurrDeviceLiveData.postValue(curDevice)
     }
 
     fun remove(device: DeviceData) = ioThread {
@@ -62,6 +65,9 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
     fun getDevice(deviceID: Long) = ioThread {
         Log.d(TAG, "getDevice: $deviceID")
         curDevice = dao.currDevice(deviceID)
+//        if(DevicesDb.migratedFrom1To2){
+//            curDevice.hiddenInputs[0] = false
+//        }
         Log.d(TAG, "getDevice: $curDevice, post Value!")
         mCurrDeviceLiveData.postValue(curDevice)
         cyclicRequest?.cancel()
@@ -78,17 +84,16 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
 
     fun getDataCyclically() {
         Log.d(TAG, "getDataCyclically")
-        val curDev = curDevice
-        if (curDev != null) {
+        curDevice?.let { curDev ->
             val url = "${curDev.url}${curDev.password}/?js="
             mLoadingStatus.postValue(LoadingStatus.LOADING)
             cyclicRequest = viewModelScope.launch {
                 withContext(Dispatchers.IO) {
                     while (cyclicRequest?.isCancelled == false) {
                         try {
-                            val ioData = apiService.getControlData(url)
-                            Log.d(TAG, "getDataCyclically: New data! $ioData")
-                            mIOData.postValue(getIOData(ioData))
+                            val iOControlData = apiService.getControlData(url)
+                            Log.d(TAG, "getDataCyclically: New data! $iOControlData")
+                            iOData.postValue(getIOData(iOControlData))
                             delay(REFRESH_TIME)
                         } catch (e: Throwable) {
                             Log.e(TAG, "getDataCyclically:error ", e)
@@ -101,13 +106,14 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
                     }
                 }
             }
+
         }
+
     }
 
 
     fun setOutput(outputN: Int, on: Boolean) { //set outputN on or off
-        val curDev = curDevice
-        if (curDev != null) {
+        curDevice?.let { curDev ->
             val url = "${curDev.url}${curDev.password}/?sw=$outputN-" + if (on) "1" else "0" //?sw={output}-{on} outputNumber 1..6; on = "1" off = "0"
             outRequest = viewModelScope.launch {
                 try {
@@ -121,8 +127,7 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     fun setImpulse(outputN: Int) { //toggle outputN for n seconds (time set up at minimonsterController
-        val curDev = curDevice
-        if (curDev != null) {
+        curDevice?.let { curDev ->
             val url = "${curDev.url}${curDev.password}/?rst=$outputN" //"?rst={output}" outputNumber 1..6
             impulseRequest = viewModelScope.launch {
                 try {
@@ -147,8 +152,7 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
         var inN = 0
         return data.prt.mapIndexed { i, _ ->
             val isOutput = data.pst[i] == 1
-            val name: String
-            name = if (isOutput) {
+            val name = if (isOutput) {
                 outN++
                 "Output$outN"
             } else {
@@ -161,9 +165,9 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
             } catch (e: Throwable) {
                 //no temp sensor
             }
-            IOItem(curDevice?.portNames?.get(i)
+            IOItem(i,curDevice?.portNames?.get(i)
                     ?: name, isOutput, data.prt[i] == 1, temp, curDevice?.impulseTypes?.get(i)
-                    ?: false, false)
+                    ?: false, false,curDevice?.hiddenInputs?.get(i)?:(i != 0))
         }
     }
 

@@ -81,4 +81,5 @@
     <string name="hysteresis">Гистересис</string>
     <string name="calibration">Калибровка</string>
     <string name="set_temperature">Задавать температуру</string>
+    <string name="add_a_port">Добавить порт</string>
 </resources>

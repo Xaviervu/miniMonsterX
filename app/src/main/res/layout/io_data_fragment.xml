@@ -21,7 +21,25 @@
                 android:scrollbars="vertical">
 
             </androidx.recyclerview.widget.RecyclerView>
+
+
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabAddPort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginBottom="32dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="visible"
+            app:backgroundTint="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/ic_add_black_24dp"
+            android:contentDescription="@string/add_a_port" />
 
         <TextView
             android:id="@+id/txt_v_version"
@@ -29,7 +47,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/version"
-            android:textColor="@color/lightGrey"
+            android:textColor="@color/secondaryTextColor"
             app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

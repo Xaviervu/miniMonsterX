@@ -2,6 +2,7 @@ package ru.vegax.xavier.miniMonsterX.fragments.iodata
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,8 +11,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.observe
-import androidx.multidex.BuildConfig.VERSION_NAME
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -22,17 +22,20 @@ import ru.vegax.xavier.miniMonsterX.activities.MainActivity
 import ru.vegax.xavier.miniMonsterX.activities.MainActivity.Companion.PREFF_DEV_ID
 import ru.vegax.xavier.miniMonsterX.databinding.IoDataFragmentBinding
 import ru.vegax.xavier.miniMonsterX.fragments.BaseFragment
+import ru.vegax.xavier.miniMonsterX.fragments.iodata.port_select.PortSelectFragment
 import ru.vegax.xavier.miniMonsterX.repository.LoadingStatus
-import java.util.*
+import kotlin.collections.ArrayList
 
 
 class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
 
-    private lateinit var mIoData: ArrayList<IOItem>
-    private lateinit var mAdapter: IOAdapter
+    private lateinit var ioDataFull: ArrayList<IOItem>
+    private lateinit var ioData: ArrayList<IOItem>
+    private lateinit var adapter: IOAdapter
+    private lateinit var swipeController: SwipeController
 
-    private lateinit var mRecyclerView: RecyclerView
+    private lateinit var recyclerView: RecyclerView
     private lateinit var viewModel: IODataViewModel
     private lateinit var swipeContainer: SwipeRefreshLayout
 
@@ -46,6 +49,7 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         baseActivity = (activity as? BaseActivity)
         super.onAttach(context)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate")
         super.onCreate(savedInstanceState)
@@ -60,37 +64,53 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         swipeContainer = viewBinding.swipeContainer
         swipeContainer.setOnRefreshListener(this)
 
-        mRecyclerView = viewBinding.recyclerView
+        recyclerView = viewBinding.recyclerView
 
-        mRecyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = LinearLayoutManager(context)
 
-        mIoData = ArrayList()
-
+        ioDataFull = ArrayList()
+        ioData = ArrayList()
         context?.let {
-            mAdapter = object : IOAdapter(it, mIoData) {
-                override fun onLongClick(v: View?): Boolean {
+            adapter = IOAdapter(it, ioData,clickListener = {position ->
+                setOutput(position)
+            },editNameListener = {position ->
+                showNameDialog(position)
+            },editTypeListener = {position ->
+                impulseOutput(position)
+            },tempClickListener = {position ->
+                setThermostat(position)
+            })
 
-                    if (v != null) {
-                        showNameDialog(v.tag as Int)
+            recyclerView.adapter = adapter
+            swipeController = SwipeController(object : SwipeControllerActions() {
+                override fun onRightClicked(position: Int) {
+                    adapter.mItemsData[position].isHidden = true
+                    viewModel.curDevice?.let { deviceData ->
+                        deviceData.hiddenInputs[adapter.mItemsData[position].portId] = true
+                        viewModel.update(deviceData)
                     }
-                    return true
                 }
-
-                override fun onClick(v: View) {
-                    when (v) {
-                        is Switch -> setOutput(v)
-                        is ImageView -> impulseOutput(v)
-                        is TextView -> setThermostat(v)
-                    }
+            })
+            val itemTouchHelper = ItemTouchHelper(swipeController)
+            itemTouchHelper.attachToRecyclerView(recyclerView)
+            recyclerView.addItemDecoration(object : RecyclerView.ItemDecoration() {
+                override fun onDraw(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+                    swipeController.onDraw(c)
                 }
-
-            }
-
-            mRecyclerView.adapter = mAdapter
+            })
         }
-        viewBinding.txtVVersion.text = getString(R.string.version, VERSION_NAME)
-
-
+        try {
+            context?.let {
+                viewBinding.txtVVersion.text = getString(R.string.version, it.packageManager
+                        .getPackageInfo(it.packageName, 0).versionName)
+            }
+        } catch (e: Throwable) {
+            Log.d(TAG, "onCreateView: no context")
+        }
+        viewBinding.fabAddPort.setOnClickListener {
+            val portSelect = PortSelectFragment()
+            activity?.supportFragmentManager?.let { it1 -> portSelect.show(it1, PortSelectFragment.TAG) }
+        }
         return viewBinding.root
     }
 
@@ -102,24 +122,23 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun showNameDialog(curPos: Int) {
-        val curContext = context
-        if (curContext != null) {
+        context?.let { curContext ->
             val d = Dialog(curContext)
             d.setContentView(R.layout.d_set_name)
             val btnOk = d.findViewById(R.id.btnSet) as TextView
             val btnCancel = d.findViewById(R.id.btnCancel) as TextView
             val portName = d.findViewById(R.id.txtVMessage) as EditText
-            portName.setText(mIoData[curPos].itemName)
+            portName.setText(ioDataFull[curPos].itemName)
             btnOk.setOnClickListener {
                 val name = portName.text.toString()
                 if (name != "") {
                     val curDevice = viewModel.curDevice
                     if (curDevice != null) {
-                        val currentItem = mIoData[curPos]
+                        val currentItem = ioDataFull[curPos]
                         currentItem.itemName = name
                         curDevice.portNames[curPos] = name
                         viewModel.update(curDevice)
-                        mAdapter.notifyItemChanged(curPos)
+                        adapter.notifyItemChanged(curPos)
                     }
                     d.dismiss()
                 } else {
@@ -156,19 +175,53 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     private fun observeViewModel() {
         Log.d(TAG, "observeViewModel")
-        viewModel.controlData.observe(viewLifecycleOwner) { item ->
-            val difference = mIoData.mapIndexed { i, ioItem ->
-                ioItem.isOn.xor(item[i].isOn) || ioItem.isOutput.xor(item[i].isOutput) ||
-                        ioItem.temperature != item[i].temperature
+        viewModel.controlData.observe(viewLifecycleOwner) { itemsList ->
+            if (ioDataFull.size != itemsList.size) {
+                ioDataFull.clear()
+                ioDataFull.addAll(itemsList)
             }
-            mIoData.clear()
-            mIoData.addAll(item)
-            difference.forEachIndexed { i, different ->
-                if (different) mAdapter.notifyItemChanged(i)
+            ioData.clear()
+            ioData.addAll(itemsList.filter { !it.isHidden })
+            var position = -1
+            var addPosition = -1
+            for (index in itemsList.indices) {
+                if (!ioDataFull[index].isHidden) position++
+                if (!itemsList[index].isHidden) addPosition++
+                if (!ioDataFull[index].isHidden && itemsList[index].isHidden) {
+                    Log.d(TAG, "observeViewModel: removed $position ${ioDataFull[index].itemName}")
+                    adapter.notifyItemRemoved(position)
+                } else if (ioDataFull[index].isHidden && !itemsList[index].isHidden) {
+                    Log.d(TAG, "observeViewModel: added $addPosition ${ioDataFull[index].itemName}")
+                    adapter.notifyItemInserted(addPosition)
+                }
+            }
+
+            position = -1
+            ioDataFull.forEachIndexed { index, ioItem ->
+                if (!itemsList[index].isHidden) position++
+                if ((ioItem.isOn.xor(itemsList[index].isOn) || ioItem.isOutput.xor(itemsList[index].isOutput) ||
+                                ioItem.temperature != itemsList[index].temperature) && !itemsList[index].isHidden) {
+                    Log.d(TAG, "observeViewModel: changed $position ${ioDataFull[index].itemName}")
+                    adapter.notifyItemChanged(position)
+                }
+            }
+
+            ioDataFull.clear()
+            itemsList.forEach { ioItem ->
+                with(ioItem) {
+                    ioDataFull.add(IOItem(portId,
+                            itemName,
+                            isOutput,
+                            isOn,
+                            temperature,
+                            isImpulse,
+                            isChanging,
+                            isHidden))
+                }
             }
             if (resetDataSet) {
                 resetDataSet = false
-                mAdapter.notifyDataSetChanged()
+                adapter.notifyDataSetChanged()
             }
         }
         viewModel.currentDeviceLiveData.observe(viewLifecycleOwner) { curDevice ->
@@ -184,14 +237,15 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
                 LoadingStatus.ERROR -> {
                     errorLoading()
                 }
+                else ->{}
             }
         }
     }
 
     private fun errorLoading() {
         swipeContainer.isRefreshing = false
-        mIoData.clear()
-        mAdapter.notifyDataSetChanged()
+        ioDataFull.clear()
+        adapter.notifyDataSetChanged()
         Toast.makeText(activity, getString(R.string.cant_update), Toast.LENGTH_SHORT).show()
     }
 
@@ -215,53 +269,46 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
     //handle click from item
 
-    fun setOutput(view: View) {
+    fun setOutput(curPos:Int) {
         val url = viewModel.curDevice?.url
         if (url != null) {
-            val curPos = view.tag as Int
-            val currentItem = mIoData[curPos]
+            val currentItem = ioDataFull[curPos]
             if (currentItem.isImpulse) {
                 currentItem.isChanging = false
                 viewModel.setImpulse(curPos + 1)
-                (view as Switch).isChecked = currentItem.isOn
             } else {
-                (view as Switch).isChecked = currentItem.isOn
                 currentItem.isChanging = false
                 viewModel.setOutput(curPos + 1, !currentItem.isOn)
             }
         }
     }
-    //handle long click from item
 
-    fun impulseOutput(view: View) {
-        onChangeOutputMode(view)
+    private fun impulseOutput(curPos:Int) {
+        onChangeOutputMode(curPos)
     }
 
-    private fun setThermostat(v: TextView) {
+    private fun setThermostat(curPos: Int) {
         val url = "${viewModel.curDevice?.url}${viewModel.curDevice?.password}/"
         if (viewModel.curDevice != null) {
-            val curPos = v.tag as Int
-
             stopUpdating()
             (baseActivity as? MainActivity)?.startThermalActivity(url, curPos)
         }
     }
 
-    private fun onChangeOutputMode(view: View) {
+    private fun onChangeOutputMode(curPos: Int) {
         (activity as MainActivity).showAlertDialog(getString(R.string.change_output), getString(R.string.sure_change_output_type)) {
-            toggleOutputType(view)
+            toggleOutputType(curPos)
         }
     }
 
-    private fun toggleOutputType(view: View) {
+    private fun toggleOutputType(curPos: Int) {
         val curDevice = viewModel.curDevice
         if (curDevice != null) {
-            val curPos = view.tag as Int
-            val currentItem = mIoData[curPos]
+            val currentItem = ioDataFull[curPos]
             curDevice.impulseTypes[curPos] = !curDevice.impulseTypes[curPos]
             currentItem.isImpulse = curDevice.impulseTypes[curPos]
             viewModel.update(curDevice)
-            mAdapter.notifyItemChanged(curPos)
+            adapter.notifyItemChanged(curPos)
             currentItem.isChanging = false
         }
     }
@@ -272,9 +319,9 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
 
     fun clearData() {
-        mIoData.clear()
-        synchronized(mRecyclerView) {
-            mRecyclerView.adapter?.notifyDataSetChanged()
+        ioDataFull.clear()
+        synchronized(recyclerView) {
+            recyclerView.adapter?.notifyDataSetChanged()
         }
     }
 
@@ -283,7 +330,7 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     companion object {
-        const val TAG = "XavvIOFragment"
+        const val TAG = "IOFragment"
         const val MY_PREFS = "my_prefs"
         fun newInstance() = IOFragment()
 

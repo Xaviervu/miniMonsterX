@@ -90,4 +90,5 @@
     <string name="hysteresis">Hysteresis</string>
     <string name="calibration">Calibration</string>
     <string name="set_temperature">Set temperature</string>
+    <string name="add_a_port">Add a port</string>
 </resources>
