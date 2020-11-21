@@ -11,7 +11,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import ru.vegax.xavier.miniMonsterX.retrofit2.Converters
 
 @Database(entities = [DeviceData::class], version = 2, exportSchema = false)
-//@Database(entities = [DeviceData::class], version = 1, exportSchema = false)
 @TypeConverters( Converters::class)
 abstract class DevicesDb : RoomDatabase() {
     abstract fun newsDao(): DevicesDao
@@ -20,7 +19,7 @@ abstract class DevicesDb : RoomDatabase() {
         private lateinit var instance: DevicesDb
         private val MIGRATION_1_2 = object : Migration(1,2){
             override fun migrate(database: SupportSQLiteDatabase){
-                database.execSQL("ALTER TABLE device_table ADD COLUMN hiddenInputs TEXT")
+                database.execSQL("ALTER TABLE device_table ADD COLUMN hiddenInputs TEXT NOT NULL DEFAULT '[false,true,true,true,true,true]'")
             }
         }
         internal fun get(context: Context): DevicesDb {
