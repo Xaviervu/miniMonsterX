@@ -82,4 +82,6 @@
     <string name="calibration">Калибровка</string>
     <string name="set_temperature">Задавать температуру</string>
     <string name="add_a_port">Добавить порт</string>
+    <string name="temp">°C</string>
+    <string name="delete">Удалить</string>
 </resources>

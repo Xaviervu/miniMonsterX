@@ -8,6 +8,7 @@ import android.graphics.RectF
 import android.view.MotionEvent
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import ru.vegax.xavier.miniMonsterX.R
 import kotlin.math.max
 import kotlin.math.min
 
@@ -118,11 +119,11 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
         val leftButton = RectF(itemView.left.toFloat(), itemView.top.toFloat(), itemView.left + buttonWidthWithoutPadding, itemView.bottom.toFloat())
         p.color = Color.BLUE
         c.drawRoundRect(leftButton, corners, corners, p)
-        drawText("EDIT", c, leftButton, p)
+        drawText(itemView.context.getString(R.string.temp), c, leftButton, p)
         val rightButton = RectF(itemView.right - buttonWidthWithoutPadding, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
         p.color = Color.RED
         c.drawRoundRect(rightButton, corners, corners, p)
-        drawText("DELETE", c, rightButton, p)
+        drawText(itemView.context.getString(R.string.delete), c, rightButton, p)
         buttonInstance = null
         if (buttonShowedState == ButtonsState.LEFT_VISIBLE) {
             buttonInstance = leftButton

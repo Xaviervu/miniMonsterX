@@ -90,6 +90,10 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
                         viewModel.update(deviceData)
                     }
                 }
+
+                override fun onLeftClicked(position: Int) {
+                   setThermostat(adapter.mItemsData[position].portId)
+                }
             })
             val itemTouchHelper = ItemTouchHelper(swipeController)
             itemTouchHelper.attachToRecyclerView(recyclerView)
