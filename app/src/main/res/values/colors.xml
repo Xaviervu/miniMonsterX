@@ -6,6 +6,7 @@
 
     <color name="secondaryTextColor">#00393939</color>
 
+    <color name="background">#FFFFFF</color>
     <color name="white">#fefdfd</color>
     <color name="LightestBlue">#afcfff</color>
     <color name="lightGrey">#37000000</color>

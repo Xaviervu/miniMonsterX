@@ -3,6 +3,7 @@ package ru.vegax.xavier.miniMonsterX.fragments.iodata
 import android.app.Dialog
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -115,6 +116,7 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
             val portSelect = PortSelectFragment()
             activity?.supportFragmentManager?.let { it1 -> portSelect.show(it1, PortSelectFragment.TAG) }
         }
+        viewBinding.fabAddPort.setColorFilter(Color.WHITE)
         return viewBinding.root
     }
 

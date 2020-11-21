@@ -1,16 +1,23 @@
 package ru.vegax.xavier.miniMonsterX.fragments.iodata
 
+import android.R.attr.*
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.graphics.drawable.Drawable
+import android.util.TypedValue
 import android.view.MotionEvent
+import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import ru.vegax.xavier.miniMonsterX.R
 import kotlin.math.max
 import kotlin.math.min
+
 
 internal enum class ButtonsState {
     GONE, LEFT_VISIBLE, RIGHT_VISIBLE
@@ -112,18 +119,36 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
     }
 
     private fun drawButtons(c: Canvas, viewHolder: RecyclerView.ViewHolder) {
-        val buttonWidthWithoutPadding = buttonWidth - 20
+        val horizontalPadding = 40
+        val buttonWidthWithoutPadding = buttonWidth - horizontalPadding
+        val verticalPadding = 40
         val corners = 16f
+        val iconPadding = 20
         val itemView = viewHolder.itemView
         val p = Paint()
-        val leftButton = RectF(itemView.left.toFloat(), itemView.top.toFloat(), itemView.left + buttonWidthWithoutPadding, itemView.bottom.toFloat())
-        p.color = Color.BLUE
+        val leftButton = RectF(itemView.left.toFloat() + 2 * horizontalPadding,
+                itemView.top.toFloat() + verticalPadding,
+                itemView.left + buttonWidthWithoutPadding, itemView.bottom.toFloat() - 2 * verticalPadding)
+        p.color = ContextCompat.getColor(itemView.context, R.color.filled_button_border)
         c.drawRoundRect(leftButton, corners, corners, p)
-        drawText(itemView.context.getString(R.string.temp), c, leftButton, p)
-        val rightButton = RectF(itemView.right - buttonWidthWithoutPadding, itemView.top.toFloat(), itemView.right.toFloat(), itemView.bottom.toFloat())
-        p.color = Color.RED
+
+        var icon: Drawable? = ContextCompat.getDrawable(itemView.context,R.drawable.ic_thermometer)
+        icon?.setBounds(leftButton.left.toInt()+iconPadding, leftButton.top.toInt()+iconPadding,
+                leftButton.right.toInt()-iconPadding, leftButton.bottom.toInt()-iconPadding)
+        icon?.draw(c)
+
+        val rightButton = RectF(itemView.right - buttonWidthWithoutPadding,
+                itemView.top.toFloat() + verticalPadding, itemView.right.toFloat() - 2 * horizontalPadding,
+                itemView.bottom.toFloat() - 2 * verticalPadding)
+        p.color = ContextCompat.getColor(itemView.context, R.color.filled_button_border)
         c.drawRoundRect(rightButton, corners, corners, p)
-        drawText(itemView.context.getString(R.string.delete), c, rightButton, p)
+
+
+        icon = ContextCompat.getDrawable(itemView.context,R.drawable.ic_baseline_delete_24)
+        icon?.setBounds(rightButton.left.toInt()+iconPadding, rightButton.top.toInt()+iconPadding,
+                rightButton.right.toInt()-iconPadding, rightButton.bottom.toInt()-iconPadding)
+        icon?.draw(c)
+
         buttonInstance = null
         if (buttonShowedState == ButtonsState.LEFT_VISIBLE) {
             buttonInstance = leftButton
@@ -131,7 +156,15 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
             buttonInstance = rightButton
         }
     }
-
+    @ColorInt
+    fun Context.getColorFromAttr(
+            attrColor: Int,
+            typedValue: TypedValue = TypedValue(),
+            resolveRefs: Boolean = true
+    ): Int {
+        theme.resolveAttribute(attrColor, typedValue, resolveRefs)
+        return typedValue.data
+    }
     private fun drawText(text: String, c: Canvas, button: RectF, p: Paint) {
         val textSize = 60f
         p.color = Color.WHITE
@@ -146,7 +179,7 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
     }
 
     companion object {
-        private const val buttonWidth = 300f
+        private const val buttonWidth = 250f
     }
 
 }

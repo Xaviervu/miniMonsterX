@@ -38,7 +38,7 @@
             app:backgroundTint="@color/colorAccent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_add_black_24dp"
+            app:srcCompat="@drawable/ic_baseline_edit_24"
             android:contentDescription="@string/add_a_port" />
 
         <TextView

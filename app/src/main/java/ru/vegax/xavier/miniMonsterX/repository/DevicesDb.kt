@@ -11,6 +11,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import ru.vegax.xavier.miniMonsterX.retrofit2.Converters
 
 @Database(entities = [DeviceData::class], version = 2, exportSchema = false)
+//@Database(entities = [DeviceData::class], version = 1, exportSchema = false)
 @TypeConverters( Converters::class)
 abstract class DevicesDb : RoomDatabase() {
     abstract fun newsDao(): DevicesDao
@@ -28,9 +29,8 @@ abstract class DevicesDb : RoomDatabase() {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
                             DevicesDb::class.java, "devices_database"
-                    )
-                        .addMigrations(MIGRATION_1_2)
-                        .build()
+                    ).addMigrations(MIGRATION_1_2)
+                     .build()
                 }
             }
             return instance
