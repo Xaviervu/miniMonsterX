@@ -3,12 +3,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_device"
+            android:id="@+id/navDarkLightMode"
+            android:icon="@drawable/ic_light_dark_mode"
+            android:title="@string/systemDefault" />
+        <item
+            android:id="@+id/navDevice"
             android:icon="@drawable/ic_widgets_black_24dp"
             android:title="@string/devices" />
         <item
-            android:id="@+id/nav_addDevice"
+            android:id="@+id/navAddDevice"
             android:icon="@drawable/ic_add_circle_outline_black_24dp"
             android:title="@string/add_device" />
+
     </group>
 </menu>

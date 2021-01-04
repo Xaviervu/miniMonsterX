@@ -33,6 +33,9 @@
     <string name="set_output">Output</string>
     <string name="devices">Devices</string>
     <string name="add_device">Add device</string>
+    <string name="systemDefault">System colors</string>
+    <string name="lightMode">Light mode</string>
+    <string name="darkMode">Dark mode</string>
     <string name="share">Share</string>
     <string name="send">Send</string>
     <string name="communicate">Communicate</string>

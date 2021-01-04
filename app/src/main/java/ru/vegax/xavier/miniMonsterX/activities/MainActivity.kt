@@ -13,14 +13,17 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+import androidx.appcompat.app.AppCompatDelegate.*
 import androidx.core.view.GravityCompat
+import androidx.core.view.forEach
+import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.internal.NavigationMenuView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED
+import kotlinx.android.synthetic.main.d_picker_select.view.*
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_FOR_CREATION
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_NAME
@@ -31,6 +34,8 @@ import ru.vegax.xavier.miniMonsterX.auxiliar.AppUpdater
 import ru.vegax.xavier.miniMonsterX.databinding.AMainBinding
 import ru.vegax.xavier.miniMonsterX.fragments.BaseFragment
 import ru.vegax.xavier.miniMonsterX.fragments.iodata.IOFragment
+import ru.vegax.xavier.miniMonsterX.preferences.ColorMode
+import ru.vegax.xavier.miniMonsterX.preferences.Preferences
 import ru.vegax.xavier.miniMonsterX.repository.DeviceData
 import ru.vegax.xavier.miniMonsterX.select_device.DeviceSelectFragment
 
@@ -43,12 +48,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var mTxtVCurrDevice: TextView
     private var mIOFragment: IOFragment? = null
     private lateinit var viewModel: IODataViewModel
-
+    private lateinit var drawer:DrawerLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (isAndroidTV()) {
-            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
-        }
+        Preferences.initPrefs(this)
         viewModel = ViewModelProvider(this).get(IODataViewModel::class.java)
         appUpdater = AppUpdater(this)
         viewBinding = DataBindingUtil.setContentView(
@@ -64,18 +67,21 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setSupportActionBar(toolbar)
 
 
-        val drawer = viewBinding.drawerLayout
+        drawer = viewBinding.drawerLayout
         val navigationView = viewBinding.navView
         val toggle = object : ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open,
                 R.string.navigation_drawer_close) {
 
             override fun onDrawerOpened(drawerView: View) {
+
+                Log.d(TAG, "onDrawerOpened: ${navigationView[0].txtVTitle}")
                 if (navigationView.requestFocus()) {
                     val navigationMenuView = navigationView.focusedChild as NavigationMenuView
                     navigationMenuView.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
                 }
             }
+
         }
 
         drawer.addDrawerListener(toggle)
@@ -100,8 +106,29 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onResume() {
         super.onResume()
         appUpdater.checkUpdating()
+        checkColorScheme()
     }
+    private fun checkColorScheme(){
 
+        val menuView = viewBinding.navView.menu
+        run loop@{
+            menuView.forEach { item ->
+                if (item.itemId == R.id.navDarkLightMode) {
+                    item.setTitle(Preferences.getSystemColorMode().colorRes)
+                    return@loop
+                }
+            }
+        }
+        when (Preferences.getSystemColorMode()) {
+            ColorMode.DARK -> {
+                setDefaultNightMode(MODE_NIGHT_YES)
+            }
+            ColorMode.LIGHT -> {
+                setDefaultNightMode(MODE_NIGHT_NO)
+            }
+            else -> setDefaultNightMode(MODE_NIGHT_FOLLOW_SYSTEM)
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         appUpdater.unRegisterListener()
@@ -138,19 +165,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     override fun onBackPressed() {
-        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
-        if (drawer != null) {
-            if (drawer.isDrawerOpen(GravityCompat.START)) {
-                drawer.closeDrawer(GravityCompat.START)
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START)
+        } else {
+
+            if (mIOFragment?.isVisible == true) {
+                finish()
             } else {
-
-                if (mIOFragment?.isVisible == true) {
-                    finish()
-                } else {
-                    super.onBackPressed()
-                }
-
+                super.onBackPressed()
             }
+
         }
 
     }
@@ -165,15 +189,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         if (id == R.id.action_refresh) {
             refreshData()
         } else if (id == R.id.action_settings) {
-//            mIOFragment?.stopUpdating()
-//
-//            val curDevice = viewModel.curDevice
-//            val intent = newInstance(this, curDevice?.deviceId ?: 0, curDevice?.deviceName
-//                    ?: "",
-//                    curDevice?.url ?: DEFAULT_URL, curDevice?.password
-//                    ?: DEFAULT_PASS, curDevice == null)
-//
-//            startActivityForResult(intent, SETTINGS)
             val sceneViewerIntent = Intent(Intent.ACTION_VIEW)
             sceneViewerIntent.data = Uri.parse("https://arvr.google.com/scene-viewer/1.0?file=https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf")
             sceneViewerIntent.setPackage("com.google.android.googlequicksearchbox")
@@ -186,22 +201,28 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val drawer = findViewById<DrawerLayout>(R.id.drawer_layout)
-
         when (item.itemId) {
-            R.id.nav_device
+            R.id.navDarkLightMode -> {
+                val curMode  = Preferences.toggleSystemColorMode()
+                item.setTitle(curMode.colorRes)
+                checkColorScheme()
+                drawer.closeDrawer(GravityCompat.START)
+                return true
+            }
+            R.id.navDevice
             -> {
                 if (!mDeviceList.isNullOrEmpty()) {
                     val deviceSelect = DeviceSelectFragment()
                     deviceSelect.show(supportFragmentManager, "selectDialog")
+                    drawer.closeDrawer(GravityCompat.START)
                 } else {
                     Toast.makeText(this, getString(R.string.no_devices), Toast.LENGTH_SHORT).show()
                 }
-                drawer.closeDrawer(GravityCompat.START)
+
 
                 return true
             }
-            R.id.nav_addDevice -> {
+            R.id.navAddDevice -> {
                 mIOFragment?.stopUpdating()
 
                 val intent = newInstance(this, 0, "",

@@ -84,4 +84,7 @@
     <string name="add_a_port">Añadir puerto</string>
     <string name="temp">°C</string>
     <string name="delete">Remover</string>
+    <string name="systemDefault">Color del sistema</string>
+    <string name="lightMode">Modo claro</string>
+    <string name="darkMode">Modo oscuro</string>
 </resources>

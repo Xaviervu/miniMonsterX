@@ -84,4 +84,7 @@
     <string name="add_a_port">Добавить порт</string>
     <string name="temp">°C</string>
     <string name="delete">Удалить</string>
+    <string name="systemDefault">Системные настройки цвета</string>
+    <string name="lightMode">Светлая тема</string>
+    <string name="darkMode">Темная тема</string>
 </resources>
