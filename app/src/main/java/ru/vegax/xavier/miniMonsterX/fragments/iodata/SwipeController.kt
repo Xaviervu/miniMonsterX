@@ -2,16 +2,15 @@ package ru.vegax.xavier.miniMonsterX.fragments.iodata
 
 import android.R.attr.*
 import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
-import android.util.TypedValue
 import android.view.MotionEvent
-import androidx.annotation.ColorInt
+import android.view.View
+import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import ru.vegax.xavier.miniMonsterX.R
@@ -76,8 +75,6 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
 
             false
         }
-
-
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -107,6 +104,7 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
                 }
                 buttonShowedState = ButtonsState.GONE
                 currentItemViewHolder = null
+
             }
             false
         }
@@ -114,7 +112,8 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
 
     private fun setItemsClickable(recyclerView: RecyclerView, isClickable: Boolean) {
         for (i in 0 until recyclerView.childCount) {
-            recyclerView.getChildAt(i).isClickable = isClickable
+            val child = recyclerView.getChildAt(i)
+            child.setUserInteractionEnabled(isClickable)
         }
     }
 
@@ -156,28 +155,19 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
             buttonInstance = rightButton
         }
     }
-    @ColorInt
-    fun Context.getColorFromAttr(
-            attrColor: Int,
-            typedValue: TypedValue = TypedValue(),
-            resolveRefs: Boolean = true
-    ): Int {
-        theme.resolveAttribute(attrColor, typedValue, resolveRefs)
-        return typedValue.data
-    }
-    private fun drawText(text: String, c: Canvas, button: RectF, p: Paint) {
-        val textSize = 60f
-        p.color = Color.WHITE
-        p.isAntiAlias = true
-        p.textSize = textSize
-        val textWidth = p.measureText(text)
-        c.drawText(text, button.centerX() - textWidth / 2, button.centerY() + textSize / 2, p)
-    }
 
     fun onDraw(c: Canvas) {
         currentItemViewHolder?.let { drawButtons(c, it) }
     }
-
+    private fun View.setUserInteractionEnabled(enabled: Boolean) {
+        isClickable = enabled
+        isLongClickable = enabled
+        if (this is ViewGroup && this.childCount > 0) {
+            this.children.forEach {
+                it.setUserInteractionEnabled(enabled)
+            }
+        }
+    }
     companion object {
         private const val buttonWidth = 250f
     }

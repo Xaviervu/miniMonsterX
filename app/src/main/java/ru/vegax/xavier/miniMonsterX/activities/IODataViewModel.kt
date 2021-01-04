@@ -169,6 +169,6 @@ internal class IODataViewModel(val app: Application) : AndroidViewModel(app) {
 
     companion object {
         const val REFRESH_TIME = 250L //ms
-        private const val TAG = "XavvViewModel"
+        private const val TAG = "IODataViewModel"
     }
 }

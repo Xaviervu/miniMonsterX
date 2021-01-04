@@ -3,6 +3,7 @@ package ru.vegax.xavier.miniMonsterX.activities
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -164,15 +165,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         if (id == R.id.action_refresh) {
             refreshData()
         } else if (id == R.id.action_settings) {
-            mIOFragment?.stopUpdating()
-
-            val curDevice = viewModel.curDevice
-            val intent = newInstance(this, curDevice?.deviceId ?: 0, curDevice?.deviceName
-                    ?: "",
-                    curDevice?.url ?: DEFAULT_URL, curDevice?.password
-                    ?: DEFAULT_PASS, curDevice == null)
-
-            startActivityForResult(intent, SETTINGS)
+//            mIOFragment?.stopUpdating()
+//
+//            val curDevice = viewModel.curDevice
+//            val intent = newInstance(this, curDevice?.deviceId ?: 0, curDevice?.deviceName
+//                    ?: "",
+//                    curDevice?.url ?: DEFAULT_URL, curDevice?.password
+//                    ?: DEFAULT_PASS, curDevice == null)
+//
+//            startActivityForResult(intent, SETTINGS)
+            val sceneViewerIntent = Intent(Intent.ACTION_VIEW)
+            sceneViewerIntent.data = Uri.parse("https://arvr.google.com/scene-viewer/1.0?file=https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf")
+            sceneViewerIntent.setPackage("com.google.android.googlequicksearchbox")
+            startActivity(sceneViewerIntent)
             return true
         }
 

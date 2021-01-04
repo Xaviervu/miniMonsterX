@@ -117,7 +117,7 @@ class AppUpdater(private val activity: Activity) :
         updateManager.completeUpdate()
     }
 
-    private fun startImmediateUpdate(it: AppUpdateInfo?) {
+    private fun startImmediateUpdate(it: AppUpdateInfo) {
         try {
             Log.d(TAG, "startImmediateUpdate")
             updateManager.startUpdateFlowForResult(
@@ -133,11 +133,13 @@ class AppUpdater(private val activity: Activity) :
     private fun startFlexibleUpdate() {
         try {
             Log.d(TAG, "startFlexibleUpdate")
-            updateManager.startUpdateFlowForResult(
-                    apUpdateInfo,
-                    AppUpdateType.FLEXIBLE,
-                    activity,
-                    REQUEST_FLEXIBLE_UPDATE)
+            apUpdateInfo?.let {
+                updateManager.startUpdateFlowForResult(
+                        it,
+                        AppUpdateType.FLEXIBLE,
+                        activity,
+                        REQUEST_FLEXIBLE_UPDATE)
+            }
         } catch (ex: Exception) {
 
             Log.e(TAG, "UpdateFlexible", ex)
