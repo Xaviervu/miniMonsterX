@@ -120,14 +120,14 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
     private fun drawButtons(c: Canvas, viewHolder: RecyclerView.ViewHolder) {
         val horizontalPadding = 40
         val buttonWidthWithoutPadding = buttonWidth - horizontalPadding
-        val verticalPadding = 40
+        val verticalPadding = 55
         val corners = 16f
         val iconPadding = 20
         val itemView = viewHolder.itemView
         val p = Paint()
         val leftButton = RectF(itemView.left.toFloat() + 2 * horizontalPadding,
-                itemView.top.toFloat() + verticalPadding,
-                itemView.left + buttonWidthWithoutPadding, itemView.bottom.toFloat() - 2 * verticalPadding)
+                itemView.top.toFloat() + (1.5 * verticalPadding).toInt(),
+                itemView.left + buttonWidthWithoutPadding, itemView.bottom.toFloat() - (1.5 * verticalPadding).toInt())
         p.color = ContextCompat.getColor(itemView.context, R.color.filled_button_border)
         c.drawRoundRect(leftButton, corners, corners, p)
 
@@ -137,8 +137,8 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
         icon?.draw(c)
 
         val rightButton = RectF(itemView.right - buttonWidthWithoutPadding,
-                itemView.top.toFloat() + verticalPadding, itemView.right.toFloat() - 2 * horizontalPadding,
-                itemView.bottom.toFloat() - 2 * verticalPadding)
+                itemView.top.toFloat() + (1.5 * verticalPadding).toInt(), itemView.right.toFloat() - 2 * horizontalPadding,
+                itemView.bottom.toFloat() - (1.5 * verticalPadding).toInt())
         p.color = ContextCompat.getColor(itemView.context, R.color.filled_button_border)
         c.drawRoundRect(rightButton, corners, corners, p)
 
