@@ -48,8 +48,8 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
         var deltaX = dX
         if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
             if (buttonShowedState != ButtonsState.GONE) {
-                if (buttonShowedState == ButtonsState.LEFT_VISIBLE) deltaX = max(deltaX, buttonWidth)
-                if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) deltaX = min(deltaX, -buttonWidth)
+                if (buttonShowedState == ButtonsState.LEFT_VISIBLE) deltaX = max(deltaX, buttonWidthPlusPadding)
+                if (buttonShowedState == ButtonsState.RIGHT_VISIBLE) deltaX = min(deltaX, -buttonWidthPlusPadding)
                 super.onChildDraw(c, recyclerView, viewHolder, deltaX, dY, actionState, isCurrentlyActive)
             } else {
                 setTouchListener(c, recyclerView, viewHolder, deltaX, dY, actionState, isCurrentlyActive)
@@ -66,7 +66,7 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
         recyclerView.setOnTouchListener { _, event ->
             swipeBack = event.action == MotionEvent.ACTION_CANCEL || event.action == MotionEvent.ACTION_UP
             if (swipeBack) {
-                if (dX < -buttonWidth) buttonShowedState = ButtonsState.RIGHT_VISIBLE else if (dX > buttonWidth) buttonShowedState = ButtonsState.LEFT_VISIBLE
+                if (dX < -buttonWidthPlusPadding) buttonShowedState = ButtonsState.RIGHT_VISIBLE else if (dX > buttonWidthPlusPadding) buttonShowedState = ButtonsState.LEFT_VISIBLE
                 if (buttonShowedState != ButtonsState.GONE) {
                     setTouchDownListener(c, recyclerView, viewHolder, dY, actionState, isCurrentlyActive)
                     setItemsClickable(recyclerView, false)
@@ -118,34 +118,35 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
     }
 
     private fun drawButtons(c: Canvas, viewHolder: RecyclerView.ViewHolder) {
-        val horizontalPadding = 40
-        val buttonWidthWithoutPadding = buttonWidth - horizontalPadding
-        val verticalPadding = 55
+
+        val verticalPadding = 72
         val corners = 16f
         val iconPadding = 20
         val itemView = viewHolder.itemView
         val p = Paint()
-        val leftButton = RectF(itemView.left.toFloat() + 2 * horizontalPadding,
-                itemView.top.toFloat() + (1.5 * verticalPadding).toInt(),
-                itemView.left + buttonWidthWithoutPadding, itemView.bottom.toFloat() - (1.5 * verticalPadding).toInt())
+        val leftButton = RectF(itemView.left.toFloat() + horizontalPadding,
+                itemView.top.toFloat() + verticalPadding,
+                itemView.left + buttonWidthPlusPadding,
+                itemView.bottom.toFloat() - verticalPadding)
         p.color = ContextCompat.getColor(itemView.context, R.color.filled_button_border)
         c.drawRoundRect(leftButton, corners, corners, p)
 
-        var icon: Drawable? = ContextCompat.getDrawable(itemView.context,R.drawable.ic_thermometer)
-        icon?.setBounds(leftButton.left.toInt()+iconPadding, leftButton.top.toInt()+iconPadding,
-                leftButton.right.toInt()-iconPadding, leftButton.bottom.toInt()-iconPadding)
+        var icon: Drawable? = ContextCompat.getDrawable(itemView.context, R.drawable.ic_thermometer)
+        icon?.setBounds(leftButton.left.toInt() + iconPadding, leftButton.top.toInt() + iconPadding,
+                leftButton.right.toInt() - iconPadding, leftButton.bottom.toInt() - iconPadding)
         icon?.draw(c)
 
-        val rightButton = RectF(itemView.right - buttonWidthWithoutPadding,
-                itemView.top.toFloat() + (1.5 * verticalPadding).toInt(), itemView.right.toFloat() - 2 * horizontalPadding,
-                itemView.bottom.toFloat() - (1.5 * verticalPadding).toInt())
+        val rightButton = RectF(itemView.right - buttonWidthPlusPadding,
+                itemView.top.toFloat() + verticalPadding,
+                itemView.right.toFloat() - horizontalPadding,
+                itemView.bottom.toFloat() - verticalPadding)
         p.color = ContextCompat.getColor(itemView.context, R.color.filled_button_border)
         c.drawRoundRect(rightButton, corners, corners, p)
 
 
-        icon = ContextCompat.getDrawable(itemView.context,R.drawable.ic_baseline_delete_24)
-        icon?.setBounds(rightButton.left.toInt()+iconPadding, rightButton.top.toInt()+iconPadding,
-                rightButton.right.toInt()-iconPadding, rightButton.bottom.toInt()-iconPadding)
+        icon = ContextCompat.getDrawable(itemView.context, R.drawable.ic_baseline_delete_24)
+        icon?.setBounds(rightButton.left.toInt() + iconPadding, rightButton.top.toInt() + iconPadding,
+                rightButton.right.toInt() - iconPadding, rightButton.bottom.toInt() - iconPadding)
         icon?.draw(c)
 
         buttonInstance = null
@@ -169,7 +170,9 @@ internal class SwipeController(private val buttonsActions: SwipeControllerAction
         }
     }
     companion object {
-        private const val buttonWidth = 250f
+        private const val buttonWidth = 115f
+        private const val horizontalPadding = 40
+        private const val buttonWidthPlusPadding = buttonWidth + horizontalPadding
     }
 
 }

@@ -12,7 +12,7 @@
     <color name="lightGrey">#37000000</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="accent_selected">#AAAAFE</color>
-    <color name="filled_button_border">#C0C0FF</color>
+    <color name="filled_button_border">#9CA5F4</color>
     <color name="selected_item_background">#515151</color>
     <color name="primaryDarkest">#363953</color>
 </resources>
