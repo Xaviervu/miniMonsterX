@@ -23,7 +23,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/checkedTextView1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/checkedTextView1"
-            app:srcCompat="@drawable/input"
+            app:srcCompat="@drawable/ic_input"
             tools:ignore="UnusedAttribute" />
 
         <TextView

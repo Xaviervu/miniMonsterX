@@ -14,4 +14,5 @@
     <color name="accent_selected">#AAAAFE</color>
     <color name="filled_button_border">#C0C0FF</color>
     <color name="selected_item_background">#515151</color>
+    <color name="primaryDarkest">#363953</color>
 </resources>

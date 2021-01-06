@@ -16,7 +16,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/txtVDevices"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/txtVDevices"
-        app:srcCompat="@drawable/device" />
+        app:srcCompat="@drawable/ic_ethernet" />
 
     <TextView
         android:id="@+id/txtVDevices"

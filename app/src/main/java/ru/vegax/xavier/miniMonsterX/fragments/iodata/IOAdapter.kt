@@ -4,21 +4,14 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.MotionEvent
-import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckedTextView
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.appcompat.widget.SwitchCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.auxiliar.hide
-import ru.vegax.xavier.miniMonsterX.auxiliar.setVisible
 import ru.vegax.xavier.miniMonsterX.auxiliar.show
 import ru.vegax.xavier.miniMonsterX.databinding.ListItemInputBinding
 import ru.vegax.xavier.miniMonsterX.databinding.ListItemOutputBinding
-import ru.vegax.xavier.miniMonsterX.databinding.ListItemPortsBinding
 import java.util.*
 
 class IOAdapter(private val context: Context, //Member variables
@@ -142,9 +135,9 @@ class IOAdapter(private val context: Context, //Member variables
                 }
 
                 if (currentItem.isImpulse) {
-                    imageViewOutputs.setImageResource(R.drawable.output_timer)
+                    imageViewOutputs.setImageResource(R.drawable.ic_output_timer)
                 } else {
-                    imageViewOutputs.setImageResource(R.drawable.output)
+                    imageViewOutputs.setImageResource(R.drawable.ic_output)
                 }
             }
         }

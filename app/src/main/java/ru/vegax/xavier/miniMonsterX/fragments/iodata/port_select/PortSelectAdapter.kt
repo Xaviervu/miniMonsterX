@@ -27,7 +27,7 @@ class PortSelectAdapter(private val deviceData: DeviceData, private val isOutput
         with(viewHolder.binding) {
             chkBoxShown.isChecked = !deviceData.hiddenInputs[position]
             txtVPort.text = deviceData.portNames[position]
-            val portId = if (isOutputList[position]) R.drawable.output else R.drawable.input
+            val portId = if (isOutputList[position]) R.drawable.ic_output else R.drawable.ic_input
             imgVOutputType.setImageDrawable(AppCompatResources.getDrawable(imgVOutputType.context, portId))
             portLayout.setOnClickListener {
                 deviceData.hiddenInputs[position] = chkBoxShown.isChecked

@@ -9,7 +9,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -25,7 +27,6 @@ import ru.vegax.xavier.miniMonsterX.databinding.IoDataFragmentBinding
 import ru.vegax.xavier.miniMonsterX.fragments.BaseFragment
 import ru.vegax.xavier.miniMonsterX.fragments.iodata.port_select.PortSelectFragment
 import ru.vegax.xavier.miniMonsterX.repository.LoadingStatus
-import kotlin.collections.ArrayList
 
 
 class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -274,7 +275,7 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     fun setOutput(curPos:Int) {
         val url = viewModel.curDevice?.url
-        if (url != null) {
+        if (url != null && curPos < ioDataFull.size) {
             val currentItem = ioDataFull[curPos]
             if (currentItem.isImpulse) {
                 currentItem.isChanging = false
