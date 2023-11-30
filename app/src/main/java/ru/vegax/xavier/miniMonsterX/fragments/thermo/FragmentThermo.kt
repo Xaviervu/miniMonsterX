@@ -11,7 +11,6 @@ import android.widget.EditText
 import android.widget.NumberPicker
 import android.widget.TextView
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -54,8 +53,8 @@ class FragmentThermo : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        viewBinding = DataBindingUtil.inflate(inflater, R.layout.f_thermostat_properties, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        viewBinding = FThermostatPropertiesBinding.inflate(inflater, container, false)
         viewBinding.swipeThermo.setOnRefreshListener(this)
         return viewBinding.root
     }
