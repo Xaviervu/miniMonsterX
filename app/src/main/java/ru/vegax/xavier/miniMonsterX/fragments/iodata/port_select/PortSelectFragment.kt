@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AppCompatDialogFragment
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import ru.vegax.xavier.miniMonsterX.R
@@ -33,7 +32,7 @@ class PortSelectFragment : AppCompatDialogFragment() {
         val activity = activity
 
 
-        binding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.f_select_device_or_port, null, false)
+        binding = FSelectDeviceOrPortBinding.inflate(LayoutInflater.from(context), null, false)
         val builder = AlertDialog.Builder(activity)
         builder.setView(binding.root)
 

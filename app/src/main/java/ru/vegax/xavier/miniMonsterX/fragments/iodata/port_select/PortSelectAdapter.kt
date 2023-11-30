@@ -3,7 +3,6 @@ package ru.vegax.xavier.miniMonsterX.fragments.iodata.port_select
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.databinding.ListItemPortsBinding
@@ -17,7 +16,13 @@ class PortSelectAdapter(private val deviceData: DeviceData, private val isOutput
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return PortsViewHolder(DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.list_item_ports, parent, false))
+        return PortsViewHolder(
+            ListItemPortsBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
 

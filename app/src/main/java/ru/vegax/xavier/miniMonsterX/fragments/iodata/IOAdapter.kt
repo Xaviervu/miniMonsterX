@@ -5,7 +5,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.auxiliar.hide
@@ -39,8 +38,21 @@ class IOAdapter(private val context: Context, //Member variables
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
 
-            OUTPUT_ELEMENT -> ViewHolderOutputs(DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.list_item_output, parent, false))
-            else -> ViewHolderInputs(DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.list_item_input, parent, false))
+            OUTPUT_ELEMENT -> ViewHolderOutputs(
+                ListItemOutputBinding.inflate(
+                    LayoutInflater.from(
+                        parent.context
+                    ), parent, false
+                )
+            )
+
+            else -> ViewHolderInputs(
+                ListItemInputBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
         }
 
     }

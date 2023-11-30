@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -59,9 +58,9 @@ class IOFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         Log.d(TAG, "onCreateView")
-        viewBinding = DataBindingUtil.inflate(inflater, R.layout.io_data_fragment, container, false)
+        viewBinding = IoDataFragmentBinding.inflate(inflater, container, false)
 
         swipeContainer = viewBinding.swipeContainer
         swipeContainer.setOnRefreshListener(this)

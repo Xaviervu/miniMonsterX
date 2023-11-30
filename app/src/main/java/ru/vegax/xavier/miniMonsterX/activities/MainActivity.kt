@@ -3,27 +3,28 @@ package ru.vegax.xavier.miniMonsterX.activities
 import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.KeyEvent
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.app.AppCompatDelegate.*
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
+import androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode
 import androidx.core.view.GravityCompat
 import androidx.core.view.forEach
-import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.material.internal.NavigationMenuView
 import com.google.android.material.navigation.NavigationView
 import com.google.android.play.core.install.model.ActivityResult.RESULT_IN_APP_UPDATE_FAILED
-import kotlinx.android.synthetic.main.d_picker_select.view.*
 import ru.vegax.xavier.miniMonsterX.R
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_FOR_CREATION
 import ru.vegax.xavier.miniMonsterX.activities.SettingsActivity.Companion.EXTRA_NAME
@@ -52,7 +53,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Preferences.initPrefs(this)
-        viewModel = ViewModelProvider(this).get(IODataViewModel::class.java)
+        viewModel = ViewModelProvider(this)[IODataViewModel::class.java]
         appUpdater = AppUpdater(this)
         viewBinding = DataBindingUtil.setContentView(
                 this,
@@ -75,11 +76,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             override fun onDrawerOpened(drawerView: View) {
 
-                Log.d(TAG, "onDrawerOpened: ${navigationView[0].txtVTitle}")
-                if (navigationView.requestFocus()) {
-                    val navigationMenuView = navigationView.focusedChild as NavigationMenuView
-                    navigationMenuView.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
-                }
+//                if (navigationView.requestFocus()) {
+//                    val navigationMenuView = navigationView.focusedChild as NavigationMenuView
+//                    navigationMenuView.descendantFocusability = ViewGroup.FOCUS_AFTER_DESCENDANTS
+//                }
             }
 
         }
